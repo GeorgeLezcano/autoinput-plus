@@ -19,17 +19,7 @@ public enum EngineState
     /// The engine is waiting for a scheduled start time.
     /// </summary>
     Scheduled,
-
-    /// <summary>
-    /// The engine is temporarily paused and may be resumed.
-    /// </summary>
-    Paused,
-
-    /// <summary>
-    /// The engine is not currently running.
-    /// </summary>
-    Stopped,
-
+    
     /// <summary>
     /// The engine encountered an error condition.
     /// </summary>

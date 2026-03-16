@@ -9,8 +9,9 @@ public interface IProfileManager
 {
     /// <summary>
     /// Gets the currently active profile, if one has been selected.
+    /// Uses a default profile otherwise.
     /// </summary>
-    InputProfile? ActiveProfile { get; }
+    InputProfile ActiveProfile { get; }
 
     /// <summary>
     /// Sets the active profile.
@@ -19,9 +20,4 @@ public interface IProfileManager
     /// The profile to activate.
     /// </param>
     void SetActiveProfile(InputProfile profile);
-
-    /// <summary>
-    /// Clears the active profile.
-    /// </summary>
-    void ClearActiveProfile();
 }

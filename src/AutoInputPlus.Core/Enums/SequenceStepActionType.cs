@@ -34,9 +34,4 @@ public enum SequenceStepActionType
     /// Releases a mouse button that is currently held down.
     /// </summary>
     MouseUp,
-
-    /// <summary>
-    /// Waits for the specified delay without sending input.
-    /// </summary>
-    Delay
 }

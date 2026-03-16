@@ -10,29 +10,41 @@ namespace AutoInputPlus.Engine.Runtime;
 public sealed class AutoInputEngine : IEngine
 {
     /// <inheritdoc/>
-    public EngineState State => throw new NotImplementedException();
-
-    /// <summary>
-    /// Flag that indicates if the sequence mode is currently
-    /// selected. Runs individual inputs otherwise.
-    /// </summary>
-    public bool SequenceMode { get; set; }
+    public EngineState State { get; private set; }
 
     /// <inheritdoc/>
-    public Task StartAsync()
+    public async Task StartAsync()
     {
-        throw new NotImplementedException();
+        //TODO start logic. This starts the key/mouse inputs.
+
+        State = EngineState.Running;
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public Task StopAsync()
+    public async Task StopAsync()
     {
-        throw new NotImplementedException();
+        //TODO stop logic. This stops the key/mouse inputs.
+
+        State = EngineState.Ready;
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public Task ToggleAsync()
+    public async Task ToggleAsync()
     {
-        throw new NotImplementedException();
+        switch (State)
+        {
+            case EngineState.Ready:
+                {
+                    await StartAsync();
+                    break;
+                }
+            case EngineState.Running:
+                {
+                    await StopAsync();
+                    break;
+                }
+        }
     }
 }

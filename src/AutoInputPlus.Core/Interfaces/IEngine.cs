@@ -30,7 +30,7 @@ public interface IEngine
     Task StopAsync();
 
     /// <summary>
-    /// Toggles the engine between running and stopped states.
+    /// Toggles the engine between running and ready states.
     /// </summary>
     /// <returns>
     /// A task that represents the asynchronous toggle operation.

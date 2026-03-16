@@ -9,14 +9,20 @@ namespace AutoInputPlus.Infrastructure.Persistence;
 public sealed class AppConfigurationStore : IAppConfigurationStore
 {
     /// <inheritdoc/>
-    public Task<AppConfiguration> LoadConfigurationAsync()
-    {
-        throw new NotImplementedException();
+    public async Task<AppConfiguration> LoadConfigurationAsync()
+    {   
+        AppConfiguration config = new();
+
+        // TODO Load the configuration at startup from persistence.
+
+        return await Task.FromResult(config);
     }
 
     /// <inheritdoc/>
-    public Task SaveConfigurationAsync(AppConfiguration configuration)
+    public async Task SaveConfigurationAsync(AppConfiguration configuration)
     {
-        throw new NotImplementedException();
+        //TODO Save the app configuration so it persists through restarts.
+
+        await Task.CompletedTask;
     }
 }
