@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>AutoInputPlus.Engine</RootNamespace>
+    <AssemblyName>AutoInputPlus.Engine</AssemblyName>
+  </PropertyGroup>
+</Project>
