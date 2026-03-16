@@ -19,7 +19,7 @@ public interface IEngine
     /// <returns>
     /// A task that represents the asynchronous start operation.
     /// </returns>
-    Task Start();
+    Task StartAsync();
 
     /// <summary>
     /// Stops the engine and halts any active automated input.
@@ -27,7 +27,7 @@ public interface IEngine
     /// <returns>
     /// A task that represents the asynchronous stop operation.
     /// </returns>
-    Task Stop();
+    Task StopAsync();
 
     /// <summary>
     /// Toggles the engine between running and stopped states.
@@ -35,5 +35,5 @@ public interface IEngine
     /// <returns>
     /// A task that represents the asynchronous toggle operation.
     /// </returns>
-    Task Toggle();
+    Task ToggleAsync();
 }

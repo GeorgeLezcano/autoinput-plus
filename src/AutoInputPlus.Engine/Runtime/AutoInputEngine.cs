@@ -16,22 +16,22 @@ public sealed class AutoInputEngine : IEngine
     /// Flag that indicates if the sequence mode is currently
     /// selected. Runs individual inputs otherwise.
     /// </summary>
-    public bool SequenceMode { get; set; } = false;
+    public bool SequenceMode { get; set; }
 
     /// <inheritdoc/>
-    public Task Start()
+    public Task StartAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task Stop()
+    public Task StopAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task Toggle()
+    public Task ToggleAsync()
     {
         throw new NotImplementedException();
     }
