@@ -9,7 +9,7 @@ namespace AutoInputPlus.Engine.Runtime;
 public sealed class SequenceRunner : ISequenceRunner
 {
     /// <inheritdoc/>
-    public Task Execute(Sequence sequence)
+    public Task ExecuteAsync(Sequence sequence)
     {
         throw new NotImplementedException();
     }

@@ -11,13 +11,13 @@ namespace AutoInputPlus.Engine.Profile;
 public sealed class ProfileExchange : IProfileExchange
 {
     /// <inheritdoc/>
-    public Task<string> ExportProfile(InputProfile profile)
+    public Task<string> ExportProfileAsync(InputProfile profile)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<InputProfile> ImportProfile(string encodedProfile)
+    public Task<InputProfile> ImportProfileAsync(string encodedProfile)
     {
         throw new NotImplementedException();
     }

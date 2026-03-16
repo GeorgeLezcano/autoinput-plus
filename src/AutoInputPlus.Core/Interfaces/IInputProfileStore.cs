@@ -17,7 +17,7 @@ public interface IInputProfileStore
     /// A task that represents the asynchronous load operation.
     /// The task result contains the loaded input profile.
     /// </returns>
-    Task<InputProfile> LoadProfile(Guid profileId);
+    Task<InputProfile> LoadProfileAsync(Guid profileId);
 
     /// <summary>
     /// Saves an input profile.
@@ -28,7 +28,7 @@ public interface IInputProfileStore
     /// <returns>
     /// A task that represents the asynchronous save operation.
     /// </returns>
-    Task SaveProfile(InputProfile profile);
+    Task SaveProfileAsync(InputProfile profile);
 
     /// <summary>
     /// Deletes a profile by its unique identifier.
@@ -39,7 +39,7 @@ public interface IInputProfileStore
     /// <returns>
     /// A task that represents the asynchronous delete operation.
     /// </returns>
-    Task DeleteProfile(Guid profileId);
+    Task DeleteProfileAsync(Guid profileId);
 
     /// <summary>
     /// Gets all available profiles.
@@ -48,7 +48,7 @@ public interface IInputProfileStore
     /// A task that represents the asynchronous retrieval operation.
     /// The task result contains a read-only collection of available input profiles.
     /// </returns>
-    Task<IReadOnlyList<InputProfile>> GetAll();
+    Task<IReadOnlyList<InputProfile>> GetAllAsync();
 
     /// <summary>
     /// Determines whether a profile with the specified unique identifier exists.
@@ -61,5 +61,5 @@ public interface IInputProfileStore
     /// The task result is <see langword="true"/> if the profile exists; otherwise,
     /// <see langword="false"/>.
     /// </returns>
-    Task<bool> Exists(Guid profileId);
+    Task<bool> ExistsAsync(Guid profileId);
 }

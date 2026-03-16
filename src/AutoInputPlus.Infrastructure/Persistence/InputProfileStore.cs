@@ -10,31 +10,31 @@ namespace AutoInputPlus.Infrastructure.Persistence;
 public sealed class InputProfileStore : IInputProfileStore
 {
     /// <inheritdoc/>
-    public Task DeleteProfile(Guid profileId)
+    public Task DeleteProfileAsync(Guid profileId)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<bool> Exists(Guid profileId)
+    public Task<bool> ExistsAsync(Guid profileId)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<InputProfile>> GetAll()
+    public Task<IReadOnlyList<InputProfile>> GetAllAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<InputProfile> LoadProfile(Guid profileId)
+    public Task<InputProfile> LoadProfileAsync(Guid profileId)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task SaveProfile(InputProfile profile)
+    public Task SaveProfileAsync(InputProfile profile)
     {
         throw new NotImplementedException();
     }

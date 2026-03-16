@@ -14,6 +14,12 @@ public sealed class Sequence
     public string Name { get; set; } = AppConstants.DefaultSequenceName;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the sequence is enabled.
+    /// Disabled sequences are ignored during execution.
+    /// </summary>
+    public bool IsEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets the ordered collection of steps that make up the sequence.
     /// </summary>
     public List<SequenceStep> Steps { get; set; } = [];

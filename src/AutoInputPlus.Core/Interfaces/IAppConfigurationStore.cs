@@ -14,7 +14,7 @@ public interface IAppConfigurationStore
     /// A task that represents the asynchronous load operation.
     /// The task result contains the loaded application configuration.
     /// </returns>
-    Task<AppConfiguration> LoadConfiguration();
+    Task<AppConfiguration> LoadConfigurationAsync();
 
     /// <summary>
     /// Saves the global application configuration.
@@ -25,5 +25,5 @@ public interface IAppConfigurationStore
     /// <returns>
     /// A task that represents the asynchronous save operation.
     /// </returns>
-    Task SaveConfiguration(AppConfiguration configuration);
+    Task SaveConfigurationAsync(AppConfiguration configuration);
 }

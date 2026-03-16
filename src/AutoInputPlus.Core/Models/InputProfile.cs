@@ -7,14 +7,14 @@ namespace AutoInputPlus.Core.Models;
 /// A profile defines user-configurable automation behavior,
 /// including sequences, timing options, and execution settings.
 /// </summary>
-public class InputProfile
+public sealed class InputProfile
 {
     /// <summary>
     /// Gets or sets the unique identifier of the profile.
     /// This value is used internally to distinguish profiles,
     /// even when multiple profiles share the same display name.
     /// </summary>
-    public Guid ProfileId { get; set; }
+    public Guid ProfileId { get; set; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets or sets the display name of the profile.

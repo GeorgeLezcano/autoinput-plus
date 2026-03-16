@@ -9,13 +9,13 @@ namespace AutoInputPlus.Infrastructure.Persistence;
 public sealed class AppConfigurationStore : IAppConfigurationStore
 {
     /// <inheritdoc/>
-    public Task<AppConfiguration> LoadConfiguration()
+    public Task<AppConfiguration> LoadConfigurationAsync()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task SaveConfiguration(AppConfiguration configuration)
+    public Task SaveConfigurationAsync(AppConfiguration configuration)
     {
         throw new NotImplementedException();
     }

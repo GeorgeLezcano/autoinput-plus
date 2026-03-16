@@ -16,5 +16,5 @@ public interface ISequenceRunner
     /// <returns>
     /// A task that represents the asynchronous execution operation.
     /// </returns>
-    Task Execute(Sequence sequence);
+    Task ExecuteAsync(Sequence sequence);
 }

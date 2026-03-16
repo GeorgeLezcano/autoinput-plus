@@ -5,7 +5,7 @@ namespace AutoInputPlus.Core.Models;
 /// These values control application-wide behavior and are not part of
 /// any shareable input profile.
 /// </summary>
-public class AppConfiguration
+public sealed class AppConfiguration
 {
     /// <summary>
     /// Gets or sets the default folder path used to store application data.

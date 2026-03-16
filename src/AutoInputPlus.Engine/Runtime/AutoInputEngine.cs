@@ -1,4 +1,4 @@
-using AutoInputPlus.Core.Constants;
+using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 
 namespace AutoInputPlus.Engine.Runtime;

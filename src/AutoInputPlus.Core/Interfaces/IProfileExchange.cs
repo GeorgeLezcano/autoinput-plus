@@ -18,7 +18,7 @@ public interface IProfileExchange
     /// A task that represents the asynchronous export operation.
     /// The task result contains the encoded profile string.
     /// </returns>
-    Task<string> ExportProfile(InputProfile profile);
+    Task<string> ExportProfileAsync(InputProfile profile);
 
     /// <summary>
     /// Imports a profile from an encoded share string.
@@ -30,7 +30,7 @@ public interface IProfileExchange
     /// A task that represents the asynchronous import operation.
     /// The task result contains the decoded input profile.
     /// </returns>
-    Task<InputProfile> ImportProfile(string encodedProfile);
+    Task<InputProfile> ImportProfileAsync(string encodedProfile);
 
     /// <summary>
     /// Determines whether the specified encoded string
