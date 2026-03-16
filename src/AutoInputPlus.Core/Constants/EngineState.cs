@@ -1,4 +1,4 @@
-namespace AutoInputPlus.Core.Enums;
+namespace AutoInputPlus.Core.Constants;
 
 /// <summary>
 /// Represents the current execution state of the automation engine.

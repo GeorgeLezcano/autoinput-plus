@@ -3,4 +3,8 @@
     <RootNamespace>AutoInputPlus.Engine</RootNamespace>
     <AssemblyName>AutoInputPlus.Engine</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoInputPlus.Core\AutoInputPlus.Core.csproj" />
+  </ItemGroup>
 </Project>
