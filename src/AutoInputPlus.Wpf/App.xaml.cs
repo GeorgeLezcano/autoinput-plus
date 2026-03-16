@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using AutoInputPlus.Engine;
 using AutoInputPlus.Infrastructure;
+using AutoInputPlus.Input.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInputPlus.Wpf;
@@ -44,7 +45,8 @@ public partial class App : Application
 
         services
             .AddEngineServices()
-            .AddInfrastructureServices();
+            .AddInfrastructureServices()
+            .AddWindowsInputServices();
 
         services.AddSingleton<MainWindow>();
     }

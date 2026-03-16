@@ -14,6 +14,7 @@
     <ProjectReference Include="..\AutoInputPlus.Core\AutoInputPlus.Core.csproj" />
     <ProjectReference Include="..\AutoInputPlus.Engine\AutoInputPlus.Engine.csproj" />
     <ProjectReference Include="..\AutoInputPlus.Infrastructure\AutoInputPlus.Infrastructure.csproj" />
+    <ProjectReference Include="..\AutoInputPlus.Input.Windows\AutoInputPlus.Input.Windows.csproj" />
   </ItemGroup>
 
   <ItemGroup>

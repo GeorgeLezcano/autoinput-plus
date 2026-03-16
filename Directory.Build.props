@@ -4,10 +4,15 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
+
+        <Version>0.1.0</Version>
+
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Authors>George Lezcano</Authors>
+        <Company>George Lezcano</Company>
         <Product>AutoInput Plus</Product>
+        <RepositoryUrl>https://github.com/GeorgeLezcano/autoinput-plus.git</RepositoryUrl>
         <AnalysisLevel>latest-recommended</AnalysisLevel>
     </PropertyGroup>
 </Project>
