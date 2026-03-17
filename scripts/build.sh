@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# build.sh
 #
 # Restores dependencies and builds the entire solution.
 #
@@ -11,10 +10,6 @@
 #   2. Builds the solution
 #
 # It is intended for local development or CI usage.
-#
-# Example:
-#
-#   ./scripts/build.sh
 #
 # =============================================================================
 

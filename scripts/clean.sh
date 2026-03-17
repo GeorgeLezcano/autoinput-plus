@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# clean.sh
 #
 # Cleans build outputs and removes generated artifacts.
 #
@@ -11,10 +10,6 @@
 #   2. Removes the artifacts directory
 #
 # Useful when you want a completely fresh build environment.
-#
-# Example:
-#
-#   ./scripts/clean.sh
 #
 # =============================================================================
 

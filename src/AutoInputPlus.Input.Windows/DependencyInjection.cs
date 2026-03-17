@@ -20,7 +20,7 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // TODO Serviceregistrations
+        // TODO Service registrations
         
         return services;
     }

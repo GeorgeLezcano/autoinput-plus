@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# installer.sh
 #
 # Placeholder script for future installer creation.
 #
@@ -17,10 +16,6 @@
 #
 # Currently this script only exists as a placeholder to define the
 # future build pipeline step.
-#
-# Example:
-#
-#   ./scripts/installer.sh
 #
 # =============================================================================
 

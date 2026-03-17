@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# publish.sh
 #
 # Publishes the WPF application as a standalone executable.
 #
@@ -15,10 +14,6 @@
 #   - Self-contained runtime
 #   - Single-file executable
 #   - Windows x64 runtime
-#
-# Example:
-#
-#   ./scripts/publish.sh
 #
 # =============================================================================
 

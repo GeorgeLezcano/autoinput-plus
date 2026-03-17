@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# common.sh
 #
 # Shared configuration and helper utilities for AutoInputPlus scripts.
 #

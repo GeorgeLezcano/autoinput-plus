@@ -16,4 +16,9 @@ public sealed class AppConfiguration
     /// Gets or sets the unique identifier of the last active profile.
     /// </summary>
     public Guid? LastActiveProfileId { get; set; }
+
+    /// <summary>
+    /// Flag that indicates if the application should run when Operating System starts.
+    /// </summary>
+    public bool RunOnSystemStartup { get; set; } //TODO Stored in a registry key? Maybe this is not needed, but instead the UI modifies the registry? more research on this...
 }

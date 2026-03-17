@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# release.sh
 #
 # Creates a distributable release archive for the application.
 #
@@ -13,10 +12,6 @@
 # The resulting archive is stored in:
 #
 #   artifacts/release/
-#
-# Example:
-#
-#   ./scripts/release.sh
 #
 # =============================================================================
 

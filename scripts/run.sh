@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# run.sh
 #
 # Runs the WPF application in Debug mode for development.
 #
 # This script is intended for local development and launches the
 # AutoInputPlus desktop application using dotnet run.
-#
-# Example:
-#
-#   ./scripts/run.sh
 #
 # =============================================================================
 
