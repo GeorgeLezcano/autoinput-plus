@@ -1,3 +1,6 @@
+using AutoInputPlus.Core.Interfaces;
+using AutoInputPlus.Input.Windows.Hotkeys;
+using AutoInputPlus.Input.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInputPlus.Input.Windows;
@@ -20,7 +23,8 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // TODO Service registrations
+        services.AddSingleton<IGlobalHotkey, WindowsHotkeyService>();
+        services.AddSingleton<IInputSender, InputSender>();
         
         return services;
     }
