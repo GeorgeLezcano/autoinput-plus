@@ -8,21 +8,30 @@ public static class AppConstants
     #region Default Names
 
     /// <summary>
-    /// Default Input profile display name.
+    /// Default input profile display name.
     /// </summary>
     public const string DefaultInputProfileName = "New Profile";
 
     /// <summary>
-    /// Default Sequence display name.
+    /// Default sequence display name.
     /// </summary>
     public const string DefaultSequenceName = "New Sequence";
+
+    #endregion
+
+    #region String Formats
+
+    /// <summary>
+    /// Default sequence step display name format.
+    /// </summary>
+    public const string DefaultSequenceStepNameFormat = "Step {0}";
 
     #endregion
 
     #region Sections .csproj
 
     /// <summary>
-    /// File name for the Build props of the solution.
+    /// File name for the build props of the solution.
     /// </summary>
     public const string DirectoryBuildPropsFileName = "Directory.Build.props";
 

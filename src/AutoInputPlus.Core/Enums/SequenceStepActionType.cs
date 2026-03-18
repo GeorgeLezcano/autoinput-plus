@@ -6,32 +6,38 @@ namespace AutoInputPlus.Core.Enums;
 public enum SequenceStepActionType
 {
     /// <summary>
-    /// Sends a keyboard key press.
+    /// Sends a full keyboard key press (down + up).
     /// </summary>
     KeyPress,
 
     /// <summary>
-    /// Presses and holds a keyboard key.
+    /// Sends a keyboard key down event.
     /// </summary>
     KeyDown,
 
     /// <summary>
-    /// Releases a keyboard key that is currently held down.
+    /// Sends a keyboard key up event.
     /// </summary>
     KeyUp,
 
     /// <summary>
-    /// Sends a mouse button click.
+    /// Sends a full mouse click (down + up).
     /// </summary>
     MouseClick,
 
     /// <summary>
-    /// Presses and holds a mouse button.
+    /// Sends a mouse button down event.
     /// </summary>
     MouseDown,
 
     /// <summary>
-    /// Releases a mouse button that is currently held down.
+    /// Sends a mouse button up event.
     /// </summary>
     MouseUp,
+
+    /// <summary>
+    /// Sends a mouse wheel event.
+    /// Positive values scroll up and negative values scroll down.
+    /// </summary>
+    MouseWheel
 }

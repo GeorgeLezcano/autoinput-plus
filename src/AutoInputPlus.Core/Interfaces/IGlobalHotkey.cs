@@ -1,20 +1,36 @@
+using AutoInputPlus.Core.Enums;
+
 namespace AutoInputPlus.Core.Interfaces;
 
 /// <summary>
-/// TODO
+/// Defines operations for registering and unregistering a global hotkey.
 /// </summary>
-public interface IGlobalHotkey //TODO Any other methods on the interface? Also fix definition as needed
+public interface IGlobalHotkey
 {
     /// <summary>
-    /// TODO Add xmls
+    /// Occurs when the registered global hotkey is triggered.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    bool RegisterHotKey(string key); //Should this be a string? Is there a better type? Should it return bool?
+    event EventHandler? HotkeyPressed;
 
     /// <summary>
-    /// TODO Add xmls
+    /// Registers a global hotkey.
     /// </summary>
-    /// <returns></returns>
-    bool UnregisterHotKey(); //TODO Should it return bool?
+    /// <param name="key">
+    /// The application key token to register, such as <c>F8</c> or <c>F10</c>.
+    /// </param>
+    /// <param name="modifiers">
+    /// Optional modifier keys that must be held with the key.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if registration succeeded; otherwise, <see langword="false"/>.
+    /// </returns>
+    bool RegisterHotKey(string key, HotkeyModifiers modifiers = HotkeyModifiers.None);
+
+    /// <summary>
+    /// Unregisters the currently registered global hotkey.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if unregistration succeeded; otherwise, <see langword="false"/>.
+    /// </returns>
+    bool UnregisterHotKey();
 }

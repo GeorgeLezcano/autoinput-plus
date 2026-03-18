@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <RootNamespace>AutoInputPlus.Input.Windows</RootNamespace>
     <AssemblyName>AutoInputPlus.Input.Windows</AssemblyName>
   </PropertyGroup>
