@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Constants;
 
 namespace AutoInputPlus.Core.Models;
@@ -7,6 +8,7 @@ namespace AutoInputPlus.Core.Models;
 /// A profile defines user-configurable automation behavior,
 /// including sequences, timing options, and execution settings.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class InputProfile
 {
     /// <summary>

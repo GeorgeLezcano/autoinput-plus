@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Constants;
 using AutoInputPlus.Core.Metadata;
 
@@ -6,6 +7,7 @@ namespace AutoInputPlus.Core.Tests.Metadata;
 /// <summary>
 /// Tests for app metadata.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class AppMetadataTests
 {
     /// <summary>

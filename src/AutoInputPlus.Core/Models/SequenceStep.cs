@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Enums;
 
 namespace AutoInputPlus.Core.Models;
@@ -5,6 +6,7 @@ namespace AutoInputPlus.Core.Models;
 /// <summary>
 /// Represents a single executable step within a sequence.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class SequenceStep
 {
     /// <summary>

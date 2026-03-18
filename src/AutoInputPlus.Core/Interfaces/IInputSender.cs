@@ -60,7 +60,8 @@ public interface IInputSender
     /// Sends a mouse wheel event.
     /// </summary>
     /// <param name="delta">
-    /// The wheel delta. Positive values scroll up and negative values scroll down.
+    /// The raw Windows wheel delta. Positive values scroll up and negative values
+    /// scroll down. A value of <c>0</c> results in no action.
     /// </param>
     void MouseWheel(int delta);
 }

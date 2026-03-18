@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Constants;
 
 namespace AutoInputPlus.Core.Models;
@@ -6,6 +7,7 @@ namespace AutoInputPlus.Core.Models;
 /// Represents an ordered collection of input steps that are
 /// executed sequentially as part of a profile.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class Sequence
 {
     /// <summary>

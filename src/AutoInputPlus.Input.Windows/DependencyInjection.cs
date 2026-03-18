@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Input.Windows.Hotkeys;
 using AutoInputPlus.Input.Windows.Input;
@@ -8,6 +9,7 @@ namespace AutoInputPlus.Input.Windows;
 /// <summary>
 /// Provides dependency injection registration methods for Windows input services.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     /// <summary>

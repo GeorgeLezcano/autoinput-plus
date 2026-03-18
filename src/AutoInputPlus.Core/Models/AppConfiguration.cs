@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace AutoInputPlus.Core.Models;
 
 /// <summary>
@@ -5,6 +7,7 @@ namespace AutoInputPlus.Core.Models;
 /// These values control application-wide behavior and are not part of
 /// any shareable input profile.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class AppConfiguration
 {
     /// <summary>
