@@ -10,7 +10,7 @@ namespace AutoInputPlus.Input.Windows.Mapping;
 /// </remarks>
 public static class KeyCodeMapper
 {
-    private static readonly Dictionary<string, ushort> KeyMap =
+    private static readonly Dictionary<string, ushort> KeyMap = //TODO These have to be adjusted to match wpf enum. OR use a middle ground for "App display name" to both.
         new(StringComparer.OrdinalIgnoreCase)
         {
             // Common control keys
