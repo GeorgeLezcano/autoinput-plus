@@ -14,7 +14,7 @@ public interface IInputSender
     /// <param name="key">
     /// The application key token to send, such as <c>A</c>, <c>Enter</c>, or <c>F5</c>.
     /// </param>
-    void KeyPress(string key);
+    void KeyPress(InputKey key);
 
     /// <summary>
     /// Sends a key down event for the specified key.
@@ -22,7 +22,7 @@ public interface IInputSender
     /// <param name="key">
     /// The application key token to send.
     /// </param>
-    void KeyDown(string key);
+    void KeyDown(InputKey key);
 
     /// <summary>
     /// Sends a key up event for the specified key.
@@ -30,7 +30,7 @@ public interface IInputSender
     /// <param name="key">
     /// The application key token to send.
     /// </param>
-    void KeyUp(string key);
+    void KeyUp(InputKey key);
 
     /// <summary>
     /// Sends a full mouse click for the specified button.

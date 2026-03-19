@@ -1,8 +1,9 @@
+using AutoInputPlus.Core.Enums;
 
 namespace AutoInputPlus.Input.Windows.Mapping;
 
 /// <summary>
-/// Maps application key tokens to Windows virtual-key codes.
+/// Maps supported application input keys to Windows virtual-key codes.
 /// </summary>
 /// <remarks>
 /// This type is static because it provides deterministic lookup behavior and does
@@ -10,157 +11,127 @@ namespace AutoInputPlus.Input.Windows.Mapping;
 /// </remarks>
 public static class KeyCodeMapper
 {
-    private static readonly Dictionary<string, ushort> KeyMap = //TODO These have to be adjusted to match wpf enum. OR use a middle ground for "App display name" to both.
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-            // Common control keys
-            ["Backspace"] = 0x08,
-            ["Tab"] = 0x09,
-            ["Enter"] = 0x0D,
-            ["Return"] = 0x0D,
-            ["Shift"] = 0x10,
-            ["Ctrl"] = 0x11,
-            ["Control"] = 0x11,
-            ["Alt"] = 0x12,
-            ["Pause"] = 0x13,
-            ["CapsLock"] = 0x14,
-            ["Escape"] = 0x1B,
-            ["Esc"] = 0x1B,
-            ["Space"] = 0x20,
-            ["PageUp"] = 0x21,
-            ["PageDown"] = 0x22,
-            ["End"] = 0x23,
-            ["Home"] = 0x24,
-            ["Left"] = 0x25,
-            ["Up"] = 0x26,
-            ["Right"] = 0x27,
-            ["Down"] = 0x28,
-            ["PrintScreen"] = 0x2C,
-            ["PrtSc"] = 0x2C,
-            ["Insert"] = 0x2D,
-            ["Delete"] = 0x2E,
-            ["Del"] = 0x2E,
-
-            // Windows keys
-            ["LWin"] = 0x5B,
-            ["LeftWin"] = 0x5B,
-            ["RWin"] = 0x5C,
-            ["RightWin"] = 0x5C,
-            ["Win"] = 0x5B,
-            ["Windows"] = 0x5B,
-
-            // Numpad
-            ["NumPad0"] = 0x60,
-            ["NumPad1"] = 0x61,
-            ["NumPad2"] = 0x62,
-            ["NumPad3"] = 0x63,
-            ["NumPad4"] = 0x64,
-            ["NumPad5"] = 0x65,
-            ["NumPad6"] = 0x66,
-            ["NumPad7"] = 0x67,
-            ["NumPad8"] = 0x68,
-            ["NumPad9"] = 0x69,
-            ["Multiply"] = 0x6A,
-            ["Add"] = 0x6B,
-            ["Separator"] = 0x6C,
-            ["Subtract"] = 0x6D,
-            ["Decimal"] = 0x6E,
-            ["Divide"] = 0x6F,
-
-            // Function keys
-            ["F1"] = 0x70,
-            ["F2"] = 0x71,
-            ["F3"] = 0x72,
-            ["F4"] = 0x73,
-            ["F5"] = 0x74,
-            ["F6"] = 0x75,
-            ["F7"] = 0x76,
-            ["F8"] = 0x77,
-            ["F9"] = 0x78,
-            ["F10"] = 0x79,
-            ["F11"] = 0x7A,
-            ["F12"] = 0x7B,
-
-            // Explicit left/right modifiers
-            ["LeftShift"] = 0xA0,
-            ["RightShift"] = 0xA1,
-            ["LeftCtrl"] = 0xA2,
-            ["LeftControl"] = 0xA2,
-            ["RightCtrl"] = 0xA3,
-            ["RightControl"] = 0xA3,
-            ["LeftAlt"] = 0xA4,
-            ["RightAlt"] = 0xA5
-        };
-
     /// <summary>
-    /// Attempts to map an application key token to a Windows virtual-key code.
+    /// Attempts to map a supported application input key to a Windows virtual-key code.
     /// </summary>
-    /// <param name="key">
-    /// The application key token, such as <c>A</c>, <c>Enter</c>, or <c>F8</c>.
-    /// </param>
+    /// <param name="key">The supported application input key.</param>
     /// <param name="virtualKeyCode">
     /// When this method returns, contains the resolved Windows virtual-key code
     /// if the mapping succeeded; otherwise, <c>0</c>.
     /// </param>
     /// <returns>
-    /// <see langword="true"/> if the key token is supported; otherwise, <see langword="false"/>.
+    /// <see langword="true"/> if the key is supported; otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool TryMapToVirtualKey(string key, out ushort virtualKeyCode)
+    public static bool TryMapToVirtualKey(InputKey key, out ushort virtualKeyCode)
+        => KeyMap.TryGetValue(key, out virtualKeyCode);
+
+    private static readonly Dictionary<InputKey, ushort> KeyMap = new()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        // Letters
+        [InputKey.A] = 0x41,
+        [InputKey.B] = 0x42,
+        [InputKey.C] = 0x43,
+        [InputKey.D] = 0x44,
+        [InputKey.E] = 0x45,
+        [InputKey.F] = 0x46,
+        [InputKey.G] = 0x47,
+        [InputKey.H] = 0x48,
+        [InputKey.I] = 0x49,
+        [InputKey.J] = 0x4A,
+        [InputKey.K] = 0x4B,
+        [InputKey.L] = 0x4C,
+        [InputKey.M] = 0x4D,
+        [InputKey.N] = 0x4E,
+        [InputKey.O] = 0x4F,
+        [InputKey.P] = 0x50,
+        [InputKey.Q] = 0x51,
+        [InputKey.R] = 0x52,
+        [InputKey.S] = 0x53,
+        [InputKey.T] = 0x54,
+        [InputKey.U] = 0x55,
+        [InputKey.V] = 0x56,
+        [InputKey.W] = 0x57,
+        [InputKey.X] = 0x58,
+        [InputKey.Y] = 0x59,
+        [InputKey.Z] = 0x5A,
 
-        string normalizedKey = NormalizeKey(key);
+        // Top-row digits
+        [InputKey.D0] = 0x30,
+        [InputKey.D1] = 0x31,
+        [InputKey.D2] = 0x32,
+        [InputKey.D3] = 0x33,
+        [InputKey.D4] = 0x34,
+        [InputKey.D5] = 0x35,
+        [InputKey.D6] = 0x36,
+        [InputKey.D7] = 0x37,
+        [InputKey.D8] = 0x38,
+        [InputKey.D9] = 0x39,
 
-        if (TryMapSingleLetter(normalizedKey, out virtualKeyCode))
-        {
-            return true;
-        }
+        // Common control keys
+        [InputKey.Backspace] = 0x08,
+        [InputKey.Tab] = 0x09,
+        [InputKey.Enter] = 0x0D,
+        [InputKey.Pause] = 0x13,
+        [InputKey.CapsLock] = 0x14,
+        [InputKey.Escape] = 0x1B,
+        [InputKey.Space] = 0x20,
 
-        if (TryMapSingleDigit(normalizedKey, out virtualKeyCode))
-        {
-            return true;
-        }
+        // Navigation
+        [InputKey.PageUp] = 0x21,
+        [InputKey.PageDown] = 0x22,
+        [InputKey.End] = 0x23,
+        [InputKey.Home] = 0x24,
+        [InputKey.Left] = 0x25,
+        [InputKey.Up] = 0x26,
+        [InputKey.Right] = 0x27,
+        [InputKey.Down] = 0x28,
+        [InputKey.PrintScreen] = 0x2C,
+        [InputKey.Insert] = 0x2D,
+        [InputKey.Delete] = 0x2E,
 
-        return KeyMap.TryGetValue(normalizedKey, out virtualKeyCode);
-    }
+        // Windows keys
+        [InputKey.LeftWin] = 0x5B,
+        [InputKey.RightWin] = 0x5C,
 
-    private static string NormalizeKey(string key) => key.Trim();
+        // Numpad
+        [InputKey.NumPad0] = 0x60,
+        [InputKey.NumPad1] = 0x61,
+        [InputKey.NumPad2] = 0x62,
+        [InputKey.NumPad3] = 0x63,
+        [InputKey.NumPad4] = 0x64,
+        [InputKey.NumPad5] = 0x65,
+        [InputKey.NumPad6] = 0x66,
+        [InputKey.NumPad7] = 0x67,
+        [InputKey.NumPad8] = 0x68,
+        [InputKey.NumPad9] = 0x69,
+        [InputKey.Multiply] = 0x6A,
+        [InputKey.Add] = 0x6B,
+        [InputKey.Separator] = 0x6C,
+        [InputKey.Subtract] = 0x6D,
+        [InputKey.Decimal] = 0x6E,
+        [InputKey.Divide] = 0x6F,
 
-    private static bool TryMapSingleLetter(string key, out ushort virtualKeyCode)
-    {
-        virtualKeyCode = 0;
+        // Function keys
+        [InputKey.F1] = 0x70,
+        [InputKey.F2] = 0x71,
+        [InputKey.F3] = 0x72,
+        [InputKey.F4] = 0x73,
+        [InputKey.F5] = 0x74,
+        [InputKey.F6] = 0x75,
+        [InputKey.F7] = 0x76,
+        [InputKey.F8] = 0x77,
+        [InputKey.F9] = 0x78,
+        [InputKey.F10] = 0x79,
+        [InputKey.F11] = 0x7A,
+        [InputKey.F12] = 0x7B,
 
-        if (key.Length != 1)
-        {
-            return false;
-        }
+        // Explicit modifiers as keys
+        [InputKey.LeftShift] = 0xA0,
+        [InputKey.RightShift] = 0xA1,
+        [InputKey.LeftCtrl] = 0xA2,
+        [InputKey.RightCtrl] = 0xA3,
+        [InputKey.LeftAlt] = 0xA4,
+        [InputKey.RightAlt] = 0xA5
+    };
 
-        char c = char.ToUpperInvariant(key[0]);
-        if (c is >= 'A' and <= 'Z')
-        {
-            virtualKeyCode = c;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool TryMapSingleDigit(string key, out ushort virtualKeyCode)
-    {
-        virtualKeyCode = 0;
-
-        if (key.Length != 1)
-        {
-            return false;
-        }
-
-        char c = key[0];
-        if (c is >= '0' and <= '9')
-        {
-            virtualKeyCode = c;
-            return true;
-        }
-
-        return false;
-    }
 }

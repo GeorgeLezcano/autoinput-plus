@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Input.Windows.Mapping;
 
 namespace AutoInputPlus.Input.Windows.Tests.Mapping;
@@ -10,14 +11,13 @@ namespace AutoInputPlus.Input.Windows.Tests.Mapping;
 public sealed class KeyCodeMapperTests
 {
     /// <summary>
-    /// Try Map To Virtual Key When Letter Returns Expected Code
+    /// Try Map To Virtual Key When Letter Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("A", 0x41)]
-    [InlineData("Z", 0x5A)]
-    [InlineData("a", 0x41)]
-    [InlineData("m", 0x4D)]
-    public void TryMapToVirtualKeyWhenLetterReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.A, 0x41)]
+    [InlineData(InputKey.Z, 0x5A)]
+    [InlineData(InputKey.M, 0x4D)]
+    public void TryMapToVirtualKeyWhenLetterReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -26,13 +26,13 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key When Digit Returns Expected Code
+    /// Try Map To Virtual Key When Digit Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("0", 0x30)]
-    [InlineData("5", 0x35)]
-    [InlineData("9", 0x39)]
-    public void TryMapToVirtualKeyWhenDigitReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.D0, 0x30)]
+    [InlineData(InputKey.D5, 0x35)]
+    [InlineData(InputKey.D9, 0x39)]
+    public void TryMapToVirtualKeyWhenDigitReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -41,28 +41,28 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key When Special Key Returns Expected Code
+    /// Try Map To Virtual Key When Special Key Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("Enter", 0x0D)]
-    [InlineData("Return", 0x0D)]
-    [InlineData("Tab", 0x09)]
-    [InlineData("Escape", 0x1B)]
-    [InlineData("Esc", 0x1B)]
-    [InlineData("Space", 0x20)]
-    [InlineData("Backspace", 0x08)]
-    [InlineData("Delete", 0x2E)]
-    [InlineData("Del", 0x2E)]
-    [InlineData("Insert", 0x2D)]
-    [InlineData("Home", 0x24)]
-    [InlineData("End", 0x23)]
-    [InlineData("PageUp", 0x21)]
-    [InlineData("PageDown", 0x22)]
-    [InlineData("Left", 0x25)]
-    [InlineData("Up", 0x26)]
-    [InlineData("Right", 0x27)]
-    [InlineData("Down", 0x28)]
-    public void TryMapToVirtualKeyWhenSpecialKeyReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.Enter, 0x0D)]
+    [InlineData(InputKey.Tab, 0x09)]
+    [InlineData(InputKey.Escape, 0x1B)]
+    [InlineData(InputKey.Space, 0x20)]
+    [InlineData(InputKey.Backspace, 0x08)]
+    [InlineData(InputKey.Delete, 0x2E)]
+    [InlineData(InputKey.Insert, 0x2D)]
+    [InlineData(InputKey.Home, 0x24)]
+    [InlineData(InputKey.End, 0x23)]
+    [InlineData(InputKey.PageUp, 0x21)]
+    [InlineData(InputKey.PageDown, 0x22)]
+    [InlineData(InputKey.Left, 0x25)]
+    [InlineData(InputKey.Up, 0x26)]
+    [InlineData(InputKey.Right, 0x27)]
+    [InlineData(InputKey.Down, 0x28)]
+    [InlineData(InputKey.PrintScreen, 0x2C)]
+    [InlineData(InputKey.Pause, 0x13)]
+    [InlineData(InputKey.CapsLock, 0x14)]
+    public void TryMapToVirtualKeyWhenSpecialKeyReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -71,13 +71,13 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key When Function Key Returns Expected Code
+    /// Try Map To Virtual Key When Function Key Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("F1", 0x70)]
-    [InlineData("F5", 0x74)]
-    [InlineData("F12", 0x7B)]
-    public void TryMapToVirtualKeyWhenFunctionKeyReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.F1, 0x70)]
+    [InlineData(InputKey.F5, 0x74)]
+    [InlineData(InputKey.F12, 0x7B)]
+    public void TryMapToVirtualKeyWhenFunctionKeyReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -86,24 +86,18 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key When Modifier Or Windows Key Returns Expected Code
+    /// Try Map To Virtual Key When Modifier Or Windows Key Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("Ctrl", 0x11)]
-    [InlineData("Control", 0x11)]
-    [InlineData("Shift", 0x10)]
-    [InlineData("Alt", 0x12)]
-    [InlineData("LeftCtrl", 0xA2)]
-    [InlineData("RightCtrl", 0xA3)]
-    [InlineData("LeftShift", 0xA0)]
-    [InlineData("RightShift", 0xA1)]
-    [InlineData("LeftAlt", 0xA4)]
-    [InlineData("RightAlt", 0xA5)]
-    [InlineData("Win", 0x5B)]
-    [InlineData("Windows", 0x5B)]
-    [InlineData("LWin", 0x5B)]
-    [InlineData("RWin", 0x5C)]
-    public void TryMapToVirtualKeyWhenModifierOrWindowsKeyReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.LeftCtrl, 0xA2)]
+    [InlineData(InputKey.RightCtrl, 0xA3)]
+    [InlineData(InputKey.LeftShift, 0xA0)]
+    [InlineData(InputKey.RightShift, 0xA1)]
+    [InlineData(InputKey.LeftAlt, 0xA4)]
+    [InlineData(InputKey.RightAlt, 0xA5)]
+    [InlineData(InputKey.LeftWin, 0x5B)]
+    [InlineData(InputKey.RightWin, 0x5C)]
+    public void TryMapToVirtualKeyWhenModifierOrWindowsKeyReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -112,18 +106,19 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key When Numpad Key Returns Expected Code
+    /// Try Map To Virtual Key When Numpad Key Returns Expected Code.
     /// </summary>
     [Theory]
-    [InlineData("NumPad0", 0x60)]
-    [InlineData("NumPad5", 0x65)]
-    [InlineData("NumPad9", 0x69)]
-    [InlineData("Add", 0x6B)]
-    [InlineData("Subtract", 0x6D)]
-    [InlineData("Multiply", 0x6A)]
-    [InlineData("Divide", 0x6F)]
-    [InlineData("Decimal", 0x6E)]
-    public void TryMapToVirtualKeyWhenNumpadKeyReturnsExpectedCode(string key, ushort expected)
+    [InlineData(InputKey.NumPad0, 0x60)]
+    [InlineData(InputKey.NumPad5, 0x65)]
+    [InlineData(InputKey.NumPad9, 0x69)]
+    [InlineData(InputKey.Add, 0x6B)]
+    [InlineData(InputKey.Subtract, 0x6D)]
+    [InlineData(InputKey.Multiply, 0x6A)]
+    [InlineData(InputKey.Divide, 0x6F)]
+    [InlineData(InputKey.Decimal, 0x6E)]
+    [InlineData(InputKey.Separator, 0x6C)]
+    public void TryMapToVirtualKeyWhenNumpadKeyReturnsExpectedCode(InputKey key, ushort expected)
     {
         bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
 
@@ -132,51 +127,16 @@ public sealed class KeyCodeMapperTests
     }
 
     /// <summary>
-    /// Try Map To Virtual Key Trims And Ignores Case
+    /// Try Map To Virtual Key When Unsupported Enum Value Returns False.
     /// </summary>
-    [Theory]
-    [InlineData(" enter ", 0x0D)]
-    [InlineData(" a ", 0x41)]
-    [InlineData(" f8 ", 0x77)]
-    public void TryMapToVirtualKeyTrimsAndIgnoresCase(string key, ushort expected)
+    [Fact]
+    public void TryMapToVirtualKeyWhenUnsupportedEnumValueReturnsFalse()
     {
-        bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
+        InputKey unsupportedKey = (InputKey)9999;
 
-        Assert.True(result);
-        Assert.Equal(expected, actual);
-    }
-
-    /// <summary>
-    /// Try Map To Virtual Key When Unsupported Returns False
-    /// </summary>
-    [Theory]
-    [InlineData("NotARealKey")]
-    [InlineData("F13")]
-    [InlineData("MouseLeft")]
-    [InlineData("??")]
-    public void TryMapToVirtualKeyWhenUnsupportedReturnsFalse(string key)
-    {
-        bool result = KeyCodeMapper.TryMapToVirtualKey(key, out ushort actual);
+        bool result = KeyCodeMapper.TryMapToVirtualKey(unsupportedKey, out ushort actual);
 
         Assert.False(result);
         Assert.Equal((ushort)0, actual);
-    }
-
-    /// <summary>
-    /// Try Map To Virtual Key When Key Is Null Throws ArgumentNullException
-    /// </summary>
-    [Fact]
-    public void TryMapToVirtualKeyWhenKeyIsNullThrowsArgumentNullException()
-    {
-        Assert.Throws<ArgumentNullException>(() => KeyCodeMapper.TryMapToVirtualKey(null!, out _));
-    }
-
-    /// <summary>
-    /// Try Map To Virtual Key When Key Is Whitespace Throws ArgumentException
-    /// </summary>
-    [Fact]
-    public void TryMapToVirtualKeyWhenKeyIsWhitespaceThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => KeyCodeMapper.TryMapToVirtualKey("   ", out _));
     }
 }

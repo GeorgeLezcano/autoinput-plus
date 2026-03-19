@@ -14,19 +14,15 @@ namespace AutoInputPlus.Input.Windows.Input;
 public sealed class InputSender : IInputSender
 {
     /// <inheritdoc/>
-    public void KeyPress(string key)
+    public void KeyPress(InputKey key)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-
         KeyDown(key);
         KeyUp(key);
     }
 
     /// <inheritdoc/>
-    public void KeyDown(string key)
+    public void KeyDown(InputKey key)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-
         ushort virtualKey = ResolveVirtualKey(key);
 
         NativeMethods.INPUT input = CreateKeyboardInput(virtualKey, keyUp: false);
@@ -34,10 +30,8 @@ public sealed class InputSender : IInputSender
     }
 
     /// <inheritdoc/>
-    public void KeyUp(string key)
+    public void KeyUp(InputKey key)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-
         ushort virtualKey = ResolveVirtualKey(key);
 
         NativeMethods.INPUT input = CreateKeyboardInput(virtualKey, keyUp: true);
@@ -78,11 +72,11 @@ public sealed class InputSender : IInputSender
         SendSingleInput(input, $"Failed to send mouse wheel input for delta '{delta}'.");
     }
 
-    private static ushort ResolveVirtualKey(string key)
+    private static ushort ResolveVirtualKey(InputKey key)
     {
         if (!KeyCodeMapper.TryMapToVirtualKey(key, out ushort virtualKey))
         {
-            throw new ArgumentException($"Unsupported key token '{key}'.", nameof(key));
+            throw new ArgumentException($"Unsupported input key '{key}'.", nameof(key));
         }
 
         return virtualKey;

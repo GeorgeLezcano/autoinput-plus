@@ -11,23 +11,17 @@ namespace AutoInputPlus.Core.Models;
 /// <param name="Modifiers">
 /// The modifier keys required for the hotkey.
 /// </param>
-public sealed record Hotkey(string Key, HotkeyModifiers Modifiers = HotkeyModifiers.None)
+public sealed record Hotkey(InputKey Key, HotkeyModifiers Modifiers = HotkeyModifiers.None)
 {
     /// <summary>
     /// Gets the normalized key token.
     /// </summary>
-    public string Key { get; init; } = NormalizeKey(Key);
+    public InputKey Key { get; init; } = Key;
 
     /// <summary>
     /// Gets the required modifier keys.
     /// </summary>
     public HotkeyModifiers Modifiers { get; init; } = Modifiers;
-
-    private static string NormalizeKey(string key)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        return key.Trim();
-    }
 
     /// <summary>
     /// Returns a display string for the hotkey.
@@ -36,7 +30,7 @@ public sealed record Hotkey(string Key, HotkeyModifiers Modifiers = HotkeyModifi
     public override string ToString()
     {
         return Modifiers == HotkeyModifiers.None
-            ? Key
+            ? $"{Key}"
             : $"{Modifiers}+{Key}";
     }
 }
