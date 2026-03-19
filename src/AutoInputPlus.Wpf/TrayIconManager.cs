@@ -1,6 +1,4 @@
-using System.Drawing;
 using System.IO;
-using System.Windows;
 using System.Windows.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Forms = System.Windows.Forms;

@@ -31,7 +31,7 @@ public sealed class InputBindingTests
     [Fact]
     public void InputBindingInitializedFromMouse()
     {
-         var binding = InputBinding.FromMouseButton(MouseButton.Left);
+        var binding = InputBinding.FromMouseButton(MouseButton.Left);
 
         Assert.Equal("Left Click", binding.ToDisplayName());
 

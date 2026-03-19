@@ -27,7 +27,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IGlobalHotkey, WindowsHotkeyService>();
         services.AddSingleton<IInputSender, InputSender>();
-        
+
         return services;
     }
 }

@@ -10,7 +10,7 @@ public sealed class AppConfigurationStore : IAppConfigurationStore
 {
     /// <inheritdoc/>
     public async Task<AppConfiguration> LoadConfigurationAsync()
-    {   
+    {
         AppConfiguration config = new();
 
         // TODO Load the configuration at startup from persistence.

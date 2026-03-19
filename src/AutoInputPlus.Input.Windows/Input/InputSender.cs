@@ -67,7 +67,7 @@ public sealed class InputSender : IInputSender
     public void MouseWheel(int delta)
     {
         if (delta == 0) return;
-        
+
         NativeMethods.INPUT input = CreateMouseWheelInput(delta);
         SendSingleInput(input, $"Failed to send mouse wheel input for delta '{delta}'.");
     }

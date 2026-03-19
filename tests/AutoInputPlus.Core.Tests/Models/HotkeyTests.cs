@@ -52,5 +52,5 @@ public sealed class HotKeyTests
         Assert.Equal(expected, hotkey.ToString());
 
     }
-    
+
 }
