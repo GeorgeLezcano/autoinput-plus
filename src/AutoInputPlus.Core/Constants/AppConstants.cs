@@ -1,3 +1,6 @@
+using AutoInputPlus.Core.Enums;
+using AutoInputPlus.Core.Models;
+
 namespace AutoInputPlus.Core.Constants;
 
 /// <summary>
@@ -5,7 +8,7 @@ namespace AutoInputPlus.Core.Constants;
 /// </summary>
 public static class AppConstants
 {
-    #region Default Names
+    #region Default Values
 
     /// <summary>
     /// Default input profile display name.
@@ -16,6 +19,26 @@ public static class AppConstants
     /// Default sequence display name.
     /// </summary>
     public const string DefaultSequenceName = "New Sequence";
+
+    /// <summary>
+    /// Default interval value between repeated inputs.
+    /// </summary>
+    public const int DefaultIntervalMilliseconds = 500;
+
+    /// <summary>
+    /// Default stop input count when count-based execution is enabled.
+    /// </summary>
+    public const int DefaultStopInputCount = 0;
+
+    /// <summary>
+    /// Default keyboard hotkey used to start or stop execution.
+    /// </summary>
+    public static readonly Hotkey DefaultStartStopHotkey = new(InputKey.F8);
+
+    /// <summary>
+    /// Default target input binding used for single-input execution mode.
+    /// </summary>
+    public static readonly InputBinding DefaultTargetInputBinding = InputBinding.FromMouseButton(MouseButton.Left);
 
     #endregion
 

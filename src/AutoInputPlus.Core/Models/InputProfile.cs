@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Constants;
+using AutoInputPlus.Core.Enums;
 
 namespace AutoInputPlus.Core.Models;
 
@@ -30,69 +31,70 @@ public sealed class InputProfile
     public List<Sequence> Sequences { get; set; } = [];
 
     /// <summary>
-    /// Interval in milliseconds between inputs.
+    /// Gets or sets the interval in milliseconds between repeated inputs.
     /// </summary>
     public int IntervalMilliseconds { get; set; }
 
     /// <summary>
-    /// Flag to indicate if app runs until stopped.
+    /// Gets or sets a value indicating whether execution should continue until manually stopped.
     /// </summary>
     public bool RunUntilStopActive { get; set; }
 
     /// <summary>
-    /// Flag to indicate if app runs until set count. 
+    /// Gets or sets a value indicating whether execution should stop after a configured count.
     /// </summary>
     public bool RunUntilSetCountActive { get; set; }
 
     /// <summary>
-    /// Input Count until App stops the inputs.
+    /// Gets or sets the total input count to execute before stopping when count-based execution is enabled.
     /// </summary>
     public int StopInputCount { get; set; }
 
     /// <summary>
-    /// Flag that indicates if the hold key is enabled.
+    /// Gets or sets a value indicating whether the target input should be held instead of pressed and released.
     /// </summary>
     public bool HoldTargetEnabled { get; set; }
 
     /// <summary>
-    /// Start/Stop Toggle App keybind.
+    /// Gets or sets the user-configurable keyboard hotkey used to start or stop execution.
     /// </summary>
-    public string StartStopKeybind { get; set; } = string.Empty;
+    public Hotkey StartStopHotkey { get; set; } = new(InputKey.F8);
 
     /// <summary>
-    /// Target Key to be used in the autoinput.
+    /// Gets or sets the target input binding used during single-input execution mode.
+    /// This binding may target either a keyboard key or a mouse button.
     /// </summary>
-    public string TargetInputKey { get; set; } = string.Empty;
+    public InputBinding TargetInputBinding { get; set; } = InputBinding.FromMouseButton(MouseButton.Left);
 
     /// <summary>
-    /// Flag to indicate the start run time is set.
+    /// Gets or sets a value indicating whether the scheduled start time is enabled.
     /// </summary>
     public bool ScheduleStartEnabled { get; set; }
 
     /// <summary>
-    /// Time of schedule start.
+    /// Gets or sets the scheduled start time.
     /// </summary>
     public DateTime ScheduleStartTime { get; set; }
 
     /// <summary>
-    /// Flag to indicate the stop run time is set.
+    /// Gets or sets a value indicating whether the scheduled stop time is enabled.
     /// </summary>
     public bool ScheduleStopEnabled { get; set; }
 
     /// <summary>
-    /// Time of scheduled end.
+    /// Gets or sets the scheduled stop time.
     /// </summary>
     public DateTime ScheduleStopTime { get; set; }
 
     /// <summary>
-    /// Currently seleted sequence from the list.
+    /// Gets or sets the currently selected sequence index.
     /// Defaults to zero as a fallback.
     /// </summary>
     public int SelectedSequenceIndex { get; set; }
 
     /// <summary>
-    /// Indicates wether the app is running the sequence or
-    /// the single target key.
+    /// Gets or sets a value indicating whether execution should use the selected sequence
+    /// instead of the single target input binding.
     /// </summary>
     public bool SequenceModeActive { get; set; }
 }

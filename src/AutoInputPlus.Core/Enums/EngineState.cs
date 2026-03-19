@@ -6,7 +6,13 @@ namespace AutoInputPlus.Core.Enums;
 public enum EngineState
 {
     /// <summary>
-    /// The engine is initialized and ready to start.
+    /// The engine is disabled. The application may still be open,
+    /// but execution hotkeys will not start automated input.
+    /// </summary>
+    Disabled,
+
+    /// <summary>
+    /// The engine is enabled and ready to start execution.
     /// </summary>
     Ready,
 
@@ -16,10 +22,10 @@ public enum EngineState
     Running,
 
     /// <summary>
-    /// The engine is waiting for a scheduled start time.
+    /// The engine is enabled and waiting for a scheduled start time.
     /// </summary>
     Scheduled,
-    
+
     /// <summary>
     /// The engine encountered an error condition.
     /// </summary>

@@ -1,12 +1,15 @@
 using AutoInputPlus.Core.Enums;
+using AutoInputPlus.Core.Extensions;
 
 namespace AutoInputPlus.Core.Models;
 
 /// <summary>
-/// Represents a single global hotkey definition for the application.
+/// Represents a single keyboard global hotkey definition for the application.
+/// This model is intentionally keyboard-only because the current Windows implementation
+/// is based on the Win32 RegisterHotKey API, which does not support mouse buttons.
 /// </summary>
 /// <param name="Key">
-/// The application key token, such as <c>F8</c>, <c>F10</c>, or <c>A</c>.
+/// The keyboard key used by the hotkey.
 /// </param>
 /// <param name="Modifiers">
 /// The modifier keys required for the hotkey.
@@ -14,7 +17,7 @@ namespace AutoInputPlus.Core.Models;
 public sealed record Hotkey(InputKey Key, HotkeyModifiers Modifiers = HotkeyModifiers.None)
 {
     /// <summary>
-    /// Gets the normalized key token.
+    /// Gets the keyboard key used by the hotkey.
     /// </summary>
     public InputKey Key { get; init; } = Key;
 
@@ -29,8 +32,10 @@ public sealed record Hotkey(InputKey Key, HotkeyModifiers Modifiers = HotkeyModi
     /// <returns>A display string such as <c>Control+F8</c> or <c>F8</c>.</returns>
     public override string ToString()
     {
+        string keyDisplay = Key.ToDisplayName();
+
         return Modifiers == HotkeyModifiers.None
-            ? $"{Key}"
-            : $"{Modifiers}+{Key}";
+            ? keyDisplay
+            : $"{Modifiers}+{keyDisplay}";
     }
 }

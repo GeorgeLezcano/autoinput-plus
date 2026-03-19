@@ -1,11 +1,12 @@
+using AutoInputPlus.Core.Constants;
+using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 
 namespace AutoInputPlus.Engine.Profile;
 
 /// <summary>
-/// Autoinput implementation to manage the
-/// active profile.
+/// AutoInputPlus implementation to manage the active profile.
 /// </summary>
 public sealed class ProfileManager : IProfileManager
 {
@@ -16,35 +17,32 @@ public sealed class ProfileManager : IProfileManager
     public void SetActiveProfile(InputProfile profile)
     {
         ArgumentNullException.ThrowIfNull(profile);
-
-        //TODO Validate fields, ranges to make sure its a valid profile.
-
         ActiveProfile = profile;
     }
 
     /// <summary>
-    /// Resets all the profile data to its default values. 
-    /// NOTE: This method do not persist unsaved profiles 
+    /// Resets all the profile data to its default values.
+    /// NOTE: This method does not persist unsaved profiles
     /// nor delete existing ones.
     /// </summary>
     public void ResetProfileToDefaultValues() => SetActiveProfile(DefaultProfile);
 
     /// <summary>
-    /// Retrieves a default application profile. This
-    /// operation is READ-ONLY.
+    /// Retrieves a default application profile.
+    /// This operation is read-only.
     /// </summary>
-    private static InputProfile DefaultProfile => new() //TODO Move to constants when fully defined.
+    private static InputProfile DefaultProfile => new()
     {
-        IntervalMilliseconds = 500,
+        IntervalMilliseconds = AppConstants.DefaultIntervalMilliseconds,
         RunUntilStopActive = true,
         RunUntilSetCountActive = false,
-        StopInputCount = 0,
-        StartStopKeybind = "F8", //TOD Get from real keys
-        TargetInputKey = "LMouse", //TOD Get from real keys
+        StopInputCount = AppConstants.DefaultStopInputCount,
+        StartStopHotkey = AppConstants.DefaultStartStopHotkey,
+        TargetInputBinding = AppConstants.DefaultTargetInputBinding,
         ScheduleStartEnabled = false,
-        ScheduleStartTime = DateTime.Now, //TODO consider format
+        ScheduleStartTime = DateTime.Now,
         ScheduleStopEnabled = false,
-        ScheduleStopTime = DateTime.Now, //TODO consider format
+        ScheduleStopTime = DateTime.Now,
         SequenceModeActive = false,
         HoldTargetEnabled = false
     };

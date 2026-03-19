@@ -14,7 +14,25 @@ public interface IEngine
     EngineState State { get; }
 
     /// <summary>
-    /// Starts the engine and begins processing automated input.
+    /// Enables the engine and allows execution hotkeys to control input.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous enable operation.
+    /// </returns>
+    Task EnableAsync();
+
+    /// <summary>
+    /// Disables the engine and prevents execution hotkeys from starting input.
+    /// Any active execution is stopped.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous disable operation.
+    /// </returns>
+    Task DisableAsync();
+
+    /// <summary>
+    /// Starts automated input execution.
+    /// The engine must be enabled and ready before execution can begin.
     /// </summary>
     /// <returns>
     /// A task that represents the asynchronous start operation.
@@ -22,7 +40,8 @@ public interface IEngine
     Task StartAsync();
 
     /// <summary>
-    /// Stops the engine and halts any active automated input.
+    /// Stops active automated input execution and returns the engine
+    /// to the ready state when the engine remains enabled.
     /// </summary>
     /// <returns>
     /// A task that represents the asynchronous stop operation.
@@ -30,10 +49,11 @@ public interface IEngine
     Task StopAsync();
 
     /// <summary>
-    /// Toggles the engine between running and ready states.
+    /// Toggles automated input execution when the engine is enabled.
+    /// If the engine is disabled, the request is ignored.
     /// </summary>
     /// <returns>
     /// A task that represents the asynchronous toggle operation.
     /// </returns>
-    Task ToggleAsync();
+    Task ToggleExecutionAsync();
 }

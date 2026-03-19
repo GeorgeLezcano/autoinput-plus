@@ -20,14 +20,14 @@ public sealed class SequenceStep
     public SequenceStepActionType ActionType { get; set; } = SequenceStepActionType.KeyPress;
 
     /// <summary>
-    /// Gets or sets the key token used by keyboard actions.
+    /// Gets or sets the keyboard key used by keyboard actions.
     /// </summary>
     /// <remarks>
     /// Used for <see cref="SequenceStepActionType.KeyPress"/>,
     /// <see cref="SequenceStepActionType.KeyDown"/>, and
     /// <see cref="SequenceStepActionType.KeyUp"/>.
     /// </remarks>
-    public string? Key { get; set; }
+    public InputKey? Key { get; set; }
 
     /// <summary>
     /// Gets or sets the mouse button used by mouse button actions.
@@ -41,9 +41,9 @@ public sealed class SequenceStep
 
     /// <summary>
     /// Gets or sets the mouse wheel delta used by wheel actions.
+    /// Positive values scroll up and negative values scroll down.
     /// </summary>
     /// <remarks>
-    /// Positive values scroll up and negative values scroll down.
     /// Used for <see cref="SequenceStepActionType.MouseWheel"/>.
     /// </remarks>
     public int MouseWheelDelta { get; set; }
