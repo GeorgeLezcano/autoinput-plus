@@ -2,419 +2,893 @@
 
 ## Purpose
 
-This guide describes the recommended implementation order after the current `Input.Windows` stopping point. The goal is to keep the solution moving in a controlled way, with each project gaining a clear responsibility before the next layer is wired in.
+This document is the working implementation guide for the repository in its current state. It is written for any developer taking over the next phases of work and is meant to be used as a practical, incremental checklist rather than a redesign document.
 
-At this point, `AutoInputPlus.Input.Windows` is treated as the platform adapter package for:
+The guide is based on the current solution structure and current code flow. It favors extending the existing implementation in small, safe steps instead of replacing major pieces all at once.
 
-- global hotkey registration
-- keyboard input sending
-- mouse button input sending
-- mouse wheel sending
-- key and modifier mapping to Windows-native values
+The priority order for backend work remains:
 
-The next work should happen outside that package unless a later feature clearly belongs there, such as cursor movement or cursor position support.
+1. `AutoInputPlus.Core`
+2. `AutoInputPlus.Input.Windows`
+3. `AutoInputPlus.Engine`
+4. `AutoInputPlus.Infrastructure`
+5. `AutoInputPlus.Wpf` at the end
 
----
-
-## Current stopping point
-
-The solution is in a good place to pause after the following package-level milestone:
-
-- `Core` contains the app-facing contracts and models.
-- `Input.Windows` contains the Windows-specific implementation details.
-- `Wpf` is still not deeply wired into hotkeys or input playback.
-- `Engine` is still the main unfinished orchestration layer.
-- `Infrastructure` is still the main unfinished persistence/settings layer.
-
-That means the next priorities are orchestration, validation, persistence, and host wiring.
+The WPF project is intentionally left near the end because the intended tray-first application flow depends on the lower layers already behaving correctly.
 
 ---
 
-## Recommended implementation order
+## Current intended application flow
 
-## Phase 1: Lock down Core models and execution expectations
+The future application flow should build on the code that already exists:
+
+1. The app starts as a tray-oriented Windows application.
+2. Startup loads app configuration and available profiles.
+3. The last active profile becomes the active profile in `IProfileManager`.
+4. The selected global hotkey is initialized and registered against the WPF host window.
+5. The engine remains either `Disabled` or `Ready` based on the saved app state.
+6. A tray action or settings UI can enable or disable the engine.
+7. The global hotkey does not enable the engine.
+8. When the engine is already enabled, the global hotkey only toggles execution.
+9. Execution uses either:
+   - single-input mode using `TargetInputBinding`, or
+   - sequence mode using the selected sequence in the active profile
+10. Settings UI edits profiles, sequences, hotkeys, import/export, and app-level preferences.
+
+That flow matches the current interfaces and existing `EngineState` design better than a design where the hotkey controls everything.
+
+---
+
+## Backend-first implementation order
+
+## Phase 1 - Finish Core decisions that affect all other layers
 
 ### Goal
-Make sure `Core` has the final shape needed by `Engine`, `Infrastructure`, and `Wpf` before those projects are wired together.
 
-### Work
+Freeze the remaining backend-facing behavior rules before deeper Engine and Infrastructure work begins.
 
-#### 1. Confirm model responsibilities
-Review and keep the boundaries clear for these models:
+### Current status
 
-- `AppConfiguration`
-- `InputProfile`
-- `Sequence`
-- `SequenceStep`
-- `Hotkey`
+Most model shapes are already good. The missing work is not broad redesign; it is mainly finalizing behavior rules so later implementations do not contradict each other.
 
-`Core` should only contain app concepts, not Windows-native concepts.
+### Step 1. Confirm execution modes in `InputProfile`
 
-#### 2. Decide key token policy
-Right now `IInputSender` and `Hotkey` use `string` key tokens. Before wiring the rest of the app, decide how the app will avoid typos.
+`InputProfile` already supports two execution styles:
 
-Recommended approach for the next phase:
+- single-input mode through `TargetInputBinding`
+- sequence mode through `SequenceModeActive`, `SelectedSequenceIndex`, and `Sequences`
 
-- add a centralized key token catalog in `Core`, such as `InputKeys`
-- use constants for supported tokens like `F8`, `Enter`, `Space`, `A`, `LeftCtrl`, etc.
-- make the UI bind to known values instead of letting users type arbitrary key strings everywhere
+#### Work
 
-This keeps the string contract flexible while reducing typo risk.
+Document and enforce these rules in code comments and engine validation:
 
-#### 3. Decide validation ownership
-Choose where invalid steps are rejected.
+- when `SequenceModeActive` is `false`, `TargetInputBinding` is the source of execution
+- when `SequenceModeActive` is `true`, the engine uses `SelectedSequenceIndex`
+- if `SelectedSequenceIndex` is out of range, execution should not start
+- an empty sequence list in sequence mode should not start execution
 
-Recommended approach:
+#### Why this path
 
-- model classes remain simple
-- execution-time validation lives in `Engine`
-- UI can do friendly pre-validation, but `Engine` remains the final guardrail
+The model already contains both modes. Reusing that shape avoids creating a second execution model later.
 
-#### 4. Confirm sequence behavior rules
-Before implementing playback, define these behaviors clearly:
+### Step 2. Finalize `SequenceStep` execution rules
 
-- what a disabled step means
-- how `DelayBeforeMilliseconds` and `DelayAfterMilliseconds` are applied
-- what `HoldDuringDelay` means for `KeyDown` and `MouseDown`
-- whether a `MouseWheelDelta` of zero is ignored or rejected in sequence validation
+`SequenceStep` already has enough fields for a useful first version.
 
-### Exit criteria
-Move on only when the app-facing contracts are stable enough that `Engine` can be implemented without reopening `Input.Windows`.
+#### Work
+
+Write the behavior rules directly into Engine tests and sequence execution code:
+
+- disabled steps are skipped
+- negative delays are invalid
+- `KeyPress` and `MouseClick` execute one full action
+- `KeyDown` and `MouseDown` can honor `HoldDuringDelay`
+- `KeyUp` and `MouseUp` ignore `HoldDuringDelay`
+- `MouseWheelDelta == 0` should be treated consistently
+
+#### Recommended rule for wheel delta
+
+Treat `MouseWheelDelta == 0` as invalid during sequence validation rather than silently running a no-op step.
+
+#### Why this path
+
+`InputSender.MouseWheel(0)` already no-ops at the platform layer, but sequence execution is a higher-level feature. A no-op step in a user-authored sequence is more likely to be a configuration mistake than intentional behavior.
+
+### Step 3. Keep `InputKey` as the source of truth
+
+The repository has already moved away from loose string key tokens. `InputKey` is the right source of truth now.
+
+#### Work
+
+Continue using `InputKey` everywhere backend-facing.
+Do not reintroduce arbitrary string-based key entry into Core or Engine.
+
+#### Why this path
+
+This keeps mapping, validation, and UI pickers consistent, and it matches the already-implemented `KeyCodeMapper` approach.
+
+### Step 4. Clarify scheduling model in profile behavior
+
+`InputProfile` already contains:
+
+- `ScheduleStartEnabled`
+- `ScheduleStartTime`
+- `ScheduleStopEnabled`
+- `ScheduleStopTime`
+
+#### Work
+
+Use the first implementation as same-day local time scheduling owned by Engine.
+Avoid cron-like or recurring schedule logic in the first pass.
+
+#### Why this path
+
+The existing profile fields are simple and user-facing. A local one-time start/stop interpretation is enough to make the feature useful without introducing a scheduler subsystem too early.
+
+### Phase 1 exit checklist
+
+- [ ] single-input and sequence-mode rules are explicitly documented in code/tests
+- [ ] sequence step behavior rules are defined
+- [ ] sequence validation rules are decided
+- [ ] scheduling is treated as local profile-based start/stop timing only
 
 ---
 
-## Phase 2: Implement Engine playback orchestration
+## Phase 2 - Expand `Input.Windows` only where backend execution needs it
 
 ### Goal
-Make `Engine` the place that actually interprets profiles and sequences using `IInputSender`.
 
-### Work
+Finish only the native features that block Engine behavior.
 
-#### 1. Implement `ISequenceRunner`
-`ISequenceRunner` should translate `SequenceStep` values into calls to `IInputSender`.
+### Current status
 
-Recommended behavior:
+`Input.Windows` is already in good shape for keyboard and mouse button execution. Only targeted additions should be made here.
 
-- skip disabled steps
-- apply pre-delay
-- execute the action
-- if `HoldDuringDelay` is true for down/hold actions, apply post-delay while held
-- otherwise apply post-delay after the action finishes
+### Step 1. Leave hotkey handling as single-registration
 
-For example:
+Current `IGlobalHotkey` and `WindowsHotkeyService` assume one active hotkey.
 
-- `KeyPress` -> `KeyPress(step.Key)`
-- `KeyDown` -> `KeyDown(step.Key)`
-- `KeyUp` -> `KeyUp(step.Key)`
-- `MouseClick` -> `MouseClick(step.MouseButton.Value)`
-- `MouseDown` -> `MouseDown(step.MouseButton.Value)`
-- `MouseUp` -> `MouseUp(step.MouseButton.Value)`
-- `MouseWheel` -> `MouseWheel(step.MouseWheelDelta)`
+#### Work
 
-#### 2. Add sequence validation
-Before executing each step, validate only what is required for that action type.
+Keep that design for now. Do not introduce multiple simultaneous global hotkeys until there is a concrete app need.
 
-Examples:
+#### Why this path
 
-- keyboard actions require `Key`
-- mouse button actions require `MouseButton`
-- wheel actions require a usable `MouseWheelDelta`
-- delays should not be negative
+The current app concept only requires one start/stop hotkey. Expanding to a hotkey manager would add complexity without current payoff.
 
-#### 3. Implement `IEngine`
-The engine should own the high-level state transitions, not raw input details.
+### Step 2. Add targeted tests around hotkey lifecycle
 
-Suggested responsibilities:
+#### Work
 
-- start sequence playback
-- stop playback safely
-- toggle between start and stop
-- expose current `EngineState`
-- ensure repeated start/stop calls behave predictably
+Add tests for:
 
-#### 4. Decide threading model
-Playback should not block the UI thread.
+- initialize with zero handle throws
+- initialize with different handle after first init throws
+- handle message returns false when not registered
+- handle message returns false for wrong message or wrong hotkey id
+- unregister with nothing registered returns false
 
-Recommended direction:
+#### Why this path
 
-- sequence execution runs asynchronously
-- cancellation support is used for stop requests
-- the engine serializes start/stop transitions to avoid overlap
+`WindowsHotkeyService` already contains meaningful stateful logic that is more important to test than adding more mapping tests.
 
-### Exit criteria
-Move on when one profile/sequence can be played through `Engine` using `Input.Windows`, even if there is no polished WPF UI yet.
+### Step 3. Add tests around `InputSender` behavior boundaries
+
+#### Work
+
+Add tests for:
+
+- invalid `InputKey` values throw through `ResolveVirtualKey`
+- `MouseWheel(0)` returns without native send attempt
+- unsupported mouse button enum values throw from `MouseButtonMapper`
+
+If direct native isolation becomes awkward, keep the initial tests focused on the pure mapping classes first and add more `InputSender` tests after introducing a minimal internal send seam.
+
+#### Why this path
+
+The platform layer is already functionally central. Adding confidence here supports later engine work.
+
+### Step 4. Add cursor movement only when a real sequence feature needs it
+
+#### Work
+
+Do not add cursor position or movement support yet unless the sequence editor requirements clearly demand it.
+
+#### Why this path
+
+The current profile and sequence models do not include pointer coordinates. Adding native movement before the Core model needs it creates dead code and forces model expansion too early.
+
+### Phase 2 exit checklist
+
+- [ ] hotkey lifecycle tests exist
+- [ ] mapper edge-case tests exist
+- [ ] input sender edge-case tests exist where practical
+- [ ] no extra Win32 features were added without model support
 
 ---
 
-## Phase 3: Implement Infrastructure persistence and settings
+## Phase 3 - Implement Engine execution properly
 
 ### Goal
-Give the application a stable way to save profiles and app configuration before building a larger UI on top.
 
-### Work
+Make `Engine` the place that actually interprets the active profile and executes the correct input path.
 
-#### 1. Implement `IInputProfileStore`
-The store should support saving and loading profiles with their sequences and steps.
+### Current status
 
-Recommended first version:
+The state machine direction is already correct. The missing piece is real execution and cancellation behavior.
 
-- JSON file persistence
-- one main application data folder
-- explicit load/save methods
-- safe handling for missing files and malformed content
+### Step 1. Keep enable/disable separate from start/stop
 
-#### 2. Implement `IAppConfigurationStore`
-Persist app-level settings such as:
+`AutoInputEngine` already reflects the intended model.
 
-- selected hotkey
-- selected profile
-- startup behavior
-- UI preferences that belong outside WPF view state
+#### Work
 
-#### 3. Implement `IProfileExchange`
-Use this for import/export of profile files.
+Preserve these rules:
 
-Recommended first version:
+- `EnableAsync()` controls whether execution is allowed at all
+- `DisableAsync()` always prevents future hotkey-driven execution
+- `StartAsync()` only starts execution when state is `Ready`
+- `ToggleExecutionAsync()` does nothing when state is `Disabled`
 
-- export a profile to a portable JSON file
-- import from JSON with validation
-- keep format versioning simple at first
+#### Why this path
 
-#### 4. Implement `IProfileManager`
-The manager should coordinate profile operations rather than making UI code talk to stores directly.
+This matches the tray app goal where the app can be running but the automation engine is intentionally not armed.
 
-Suggested responsibilities:
+### Step 2. Inject runtime dependencies into `AutoInputEngine`
 
-- create profile
-- clone profile
-- rename profile
-- delete profile
-- select active profile
-- save current changes
+The engine currently has no execution dependencies.
 
-### Exit criteria
-Move on when the application can persist configuration and profiles without the UI owning file logic.
+#### Work
+
+Inject at least:
+
+- `IProfileManager`
+- `ISequenceRunner`
+- `IInputSender`
+
+A minimal first version can keep single-input execution inside `AutoInputEngine` and delegate sequence execution to `ISequenceRunner`.
+
+#### Suggested flow
+
+- read `ActiveProfile`
+- if `SequenceModeActive` is true, validate the selected sequence and call `ISequenceRunner.ExecuteAsync(...)`
+- otherwise execute the target binding repeatedly according to the profile settings
+
+#### Why this path
+
+It reuses existing interfaces and keeps the engine as orchestration instead of pushing profile interpretation into WPF.
+
+### Step 3. Add a private execution loop for single-input mode
+
+The current profile already supports repeated non-sequence execution:
+
+- interval-based repetition
+- run-until-stop mode
+- count-based stopping
+- hold target option
+
+#### Work
+
+Implement a private async execution loop in `AutoInputEngine` for single-input mode.
+
+#### Recommended first-pass behavior
+
+- if `HoldTargetEnabled` is false:
+  - send one press or click per iteration
+  - delay by `IntervalMilliseconds` between iterations when continuing
+- if `HoldTargetEnabled` is true:
+  - send down once at start
+  - wait until stop or count completion logic ends
+  - send up once during cleanup
+
+#### Why this path
+
+This aligns with the existing profile fields and avoids inventing a second abstraction for simple repeating input.
+
+### Step 4. Add cancellation support
+
+#### Work
+
+Add a `CancellationTokenSource` inside `AutoInputEngine` for the currently active run.
+Add a small synchronization mechanism such as `SemaphoreSlim` around start/stop transitions.
+
+#### Minimum expected behavior
+
+- repeated `StartAsync()` while running returns safely
+- `StopAsync()` cancels active work and returns the engine to `Ready`
+- `DisableAsync()` cancels active work before going to `Disabled`
+- completion cleanup is centralized so down/held inputs can be released safely
+
+#### Why this path
+
+The app is asynchronous by nature and the future tray/WPF host must remain responsive.
+
+### Step 5. Implement `SequenceRunner`
+
+`SequenceRunner` currently only checks whether sequence mode is active.
+
+#### Work
+
+Inject `IInputSender` into `SequenceRunner`.
+Add step validation and ordered execution.
+
+#### Recommended implementation order
+
+1. Validate the sequence object itself.
+2. Iterate steps in order.
+3. Skip disabled steps.
+4. Apply `DelayBeforeMilliseconds`.
+5. Execute action.
+6. Apply `DelayAfterMilliseconds`.
+7. Respect cancellation between steps and after delays.
+
+#### Action mapping
+
+- `KeyPress` -> `IInputSender.KeyPress(step.Key.Value)`
+- `KeyDown` -> `IInputSender.KeyDown(step.Key.Value)`
+- `KeyUp` -> `IInputSender.KeyUp(step.Key.Value)`
+- `MouseClick` -> `IInputSender.MouseClick(step.MouseButton.Value)`
+- `MouseDown` -> `IInputSender.MouseDown(step.MouseButton.Value)`
+- `MouseUp` -> `IInputSender.MouseUp(step.MouseButton.Value)`
+- `MouseWheel` -> `IInputSender.MouseWheel(step.MouseWheelDelta)`
+
+#### Hold behavior recommendation
+
+For the first pass:
+
+- use `HoldDuringDelay` only for `KeyDown` and `MouseDown`
+- when `HoldDuringDelay` is true, apply post-delay before the method returns control to the next step
+- do not auto-insert a matching `KeyUp` or `MouseUp`
+
+That means authored sequences remain explicit. If a developer wants a press-and-hold followed by release, the sequence should contain both steps.
+
+#### Why this path
+
+This keeps the sequence model transparent. Hidden automatic release behavior would make sequences harder to reason about.
+
+### Step 6. Add engine tests before adding more features
+
+#### Work
+
+Add tests for:
+
+- initial state is `Disabled`
+- enable moves to `Ready`
+- start throws when disabled
+- toggle while disabled returns without starting
+- start while ready moves to running path
+- stop from running returns to ready
+- disable from running cancels and goes to disabled
+- sequence mode delegates to `ISequenceRunner`
+- single-input mode uses `TargetInputBinding`
+
+#### Why this path
+
+Engine is the new center of behavior. It should gain real tests as soon as it gains real logic.
+
+### Phase 3 exit checklist
+
+- [ ] engine runs both single-input and sequence mode
+- [ ] start/stop/disable behavior is stable
+- [ ] held-input cleanup is safe
+- [ ] engine tests cover real state transitions and execution paths
 
 ---
 
-## Phase 4: Wire WPF to the existing packages
+## Phase 4 - Implement Infrastructure persistence in small steps
 
 ### Goal
-Use `Wpf` as the host and composition layer, not as the place where business logic lives.
 
-### Work
+Persist app configuration and profiles without changing the current public contracts.
 
-#### 1. Set up startup composition
-At startup:
+### Current status
 
-- build the service provider
-- register `Core`/`Engine`/`Infrastructure`/`Input.Windows` dependencies
-- load configuration and profiles
+The interfaces are good, but the implementations are still placeholders.
 
-#### 2. Initialize global hotkeys
-The WPF app should own the native window handle and message hook.
+### Step 1. Standardize storage paths
 
-Recommended flow:
+#### Work
 
-- get the main window handle after initialization
-- call `IGlobalHotkey.Initialize(handle)`
-- register the selected app hotkey from configuration
-- forward native messages into `HandleWindowMessage(...)`
-- react to `HotkeyPressed` by toggling the engine
+Use a single application data root under `%AppData%` or `%LocalAppData%`.
+The first pass should centralize file paths in one internal helper inside Infrastructure.
 
-#### 3. Build minimum viable screens
-Implement the smallest useful UI first.
+#### Recommended layout
 
-Recommended order:
+```text
+AutoInputPlus/
+  config.json
+  profiles/
+    {profileId}.json
+```
 
-- profile list
-- sequence list
-- step editor
-- selected hotkey display/editor
-- start/stop status area
+#### Why this path
 
-#### 4. Keep WPF thin
-Do not move validation, persistence, or playback logic into code-behind beyond host integration.
+It keeps persistence obvious, easy to inspect manually, and easy to back up or delete during development.
 
-### Exit criteria
-Move on when the user can:
+### Step 2. Implement `AppConfigurationStore`
 
-- choose a profile
-- edit sequences
-- save changes
-- register a global hotkey
-- start and stop playback through the UI
+#### Work
+
+Persist `AppConfiguration` to `config.json`.
+On load:
+
+- if file does not exist, return a default `AppConfiguration`
+- if file exists but is invalid, return default configuration and preserve the option to log the issue later
+
+#### Recommended first-pass fields to persist
+
+- `DataFolderPath`
+- `LastActiveProfileId`
+- `RunOnSystemStartup`
+
+#### Why this path
+
+The interface is already minimal and does not require additional contracts to become useful.
+
+### Step 3. Implement `InputProfileStore`
+
+#### Work
+
+Persist one profile per file keyed by `ProfileId`.
+Implement:
+
+- `SaveProfileAsync`
+- `LoadProfileAsync`
+- `GetAllAsync`
+- `ExistsAsync`
+- `DeleteProfileAsync`
+
+#### Recommended behavior
+
+- saving a profile creates or overwrites `{profileId}.json`
+- `GetAllAsync()` loads and returns all readable profiles
+- malformed profile files are skipped during `GetAllAsync()` but should not crash the entire load
+- `LoadProfileAsync(Guid)` should throw a clear file-not-found style exception when missing
+
+#### Why this path
+
+One-profile-per-file keeps profile management simple and works well with future import/export.
+
+### Step 4. Add JSON serializer options once and reuse them
+
+#### Work
+
+Define one internal `JsonSerializerOptions` instance for Infrastructure profile/config persistence.
+Use it consistently for stores and later for profile exchange.
+
+#### Why this path
+
+This prevents accidental drift between on-disk persistence and import/export serialization.
+
+### Step 5. Delay registry startup integration until WPF host work
+
+`RunOnSystemStartup` exists in `AppConfiguration`, but changing the registry should not happen in `AppConfigurationStore` yet.
+
+#### Work
+
+For now, treat `RunOnSystemStartup` as a persisted preference.
+Registry integration can be added later from the WPF host when the UI for this option exists.
+
+#### Why this path
+
+Saving the preference and applying the OS integration are separate concerns. Keeping them separate avoids making the persistence layer own machine-specific behavior.
+
+### Step 6. Add infrastructure tests around real JSON behavior
+
+#### Work
+
+Add tests for:
+
+- save then load config roundtrip
+- save then load profile roundtrip
+- get all profiles returns only valid files
+- delete removes the profile file
+- exists reflects disk state
+- missing config returns default config
+
+#### Why this path
+
+This layer should be testable with temporary folders and does not need heavy mocking.
+
+### Phase 4 exit checklist
+
+- [ ] configuration persists to disk
+- [ ] profiles persist to disk
+- [ ] invalid files are handled safely
+- [ ] infrastructure tests cover real file behavior
 
 ---
 
-## Phase 5: Add profile editing quality-of-life features
+## Phase 5 - Implement profile exchange using the same model shape
 
 ### Goal
-Make profile authoring comfortable enough that the app becomes truly usable.
 
-### Work
+Make import/export useful without inventing a second profile format.
 
-#### 1. Replace free-text key entry in the UI
-Avoid raw typing for key tokens wherever possible.
+### Current status
 
-Recommended direction:
+`ProfileExchange` exists but is not implemented.
 
-- dropdowns for common keys
-- grouped categories such as letters, digits, function keys, navigation keys, modifiers
-- use centralized key token constants from `Core`
+### Step 1. Start with portable JSON export
 
-#### 2. Add step templates
-Support easy insertion of common actions like:
+#### Work
 
-- press Enter
-- left click
-- right click
-- wheel up/down one notch
-- hold key then release
+Use a plain JSON representation of `InputProfile` for the first export format.
+Optionally wrap it in a small envelope later if versioning becomes necessary.
 
-#### 3. Add profile duplication and undo-friendly editing
-You do not need full undo immediately, but you should make it easy to duplicate sequences and profiles before editing.
+#### Recommended first pass
 
-#### 4. Add validation feedback in the editor
-Show invalid or incomplete steps before the user tries to run them.
+- export returns serialized JSON string
+- import accepts serialized JSON string
+- validation tries to parse the expected structure
 
-### Exit criteria
-Move on when editing no longer depends on memorizing exact key tokens.
+#### Why this path
+
+The project already needs JSON for persistence. Reusing the same shape reduces duplicate logic.
+
+### Step 2. Add lightweight format versioning only when needed
+
+#### Work
+
+If a version marker is added, keep it minimal, for example:
+
+```json
+{
+  "formatVersion": 1,
+  "profile": { ... }
+}
+```
+
+Do not add compression, custom encoding, or binary packing in the first pass.
+
+#### Why this path
+
+Human-readable export is easier to debug, easier to migrate, and good enough for current app scope.
+
+### Step 3. Validate imported profile shape before accepting it
+
+#### Work
+
+At minimum, validate:
+
+- profile object exists
+- profile name is present or defaultable
+- sequence indices are sane
+- sequence steps are structurally valid
+- target binding contains exactly one source
+
+#### Why this path
+
+Import is an entry point for malformed data. Validation here prevents corrupted profiles from reaching runtime execution.
+
+### Phase 5 exit checklist
+
+- [ ] export returns a valid portable profile string
+- [ ] import validates before returning a profile
+- [ ] validation rejects malformed payloads
 
 ---
 
-## Phase 6: Add recording and cursor features
+## Phase 6 - Add WPF host plumbing after backend behavior is stable
 
 ### Goal
-Expand the app from basic playback to richer automation authoring.
 
-### Work
+Turn WPF into the Windows shell and settings surface, not the business-logic layer.
 
-#### 1. Add mouse position support
-This is the next natural `Input.Windows` expansion.
+### Current status
 
-Potential additions:
+WPF currently only boots the container and shows `MainWindow`.
 
-- get current cursor position
-- move cursor to absolute position
-- move cursor relatively
-- click at current or explicit position
+### Step 1. Add application bootstrap flow
 
-This likely requires adding a cursor-related contract in `Core` and Win32 implementations in `Input.Windows`.
+#### Work
 
-#### 2. Add input recording support
-Recording is a separate feature and should not be forced into `InputSender`.
+During startup:
 
-You will need to decide whether recording lives in:
+1. build service provider
+2. load configuration from `IAppConfigurationStore`
+3. load all profiles from `IInputProfileStore`
+4. set active profile in `IProfileManager`
+5. initialize engine enabled/disabled state from the chosen startup policy
+6. show tray presence and only show settings window when requested
 
-- `Engine`
-- a new package later
-- or a dedicated Windows-input recording service
+#### Why this path
 
-#### 3. Decide recorded step format
-If mouse positions are recorded, define how they appear in `SequenceStep`.
+It matches the tray-first app concept and keeps startup behavior deterministic.
 
-Possible future directions:
+### Step 2. Add tray integration before building a large settings UI
 
-- extend `SequenceStep`
-- add optional coordinate properties
-- or create a more flexible action payload model later
+#### Work
 
-### Exit criteria
-Move on when the app can record or at least capture cursor-based actions in a stable format.
+Create the tray icon and add a context menu with at least:
 
----
+- open settings
+- enable engine
+- disable engine
+- start execution
+- stop execution
+- exit
 
-## Phase 7: Harden the application
+#### Recommended engine menu behavior
 
-### Goal
-Turn the working app into a reliable one.
+- enable/disable controls engine armed state
+- start/stop controls execution only when allowed
+- menu text reflects current `EngineState`
 
-### Work
+#### Why this path
 
-#### 1. Expand tests
-Focus tests on:
+The tray shell is the main operating model of the application. It should exist before investing heavily in editor screens.
 
-- sequence validation
-- sequence runner behavior
-- engine state transitions
-- persistence correctness
-- hotkey registration state logic where possible
+### Step 3. Wire `IGlobalHotkey` into the WPF host window
 
-#### 2. Improve exception handling and logging
-Add useful logging around:
+#### Work
 
-- profile loading/saving
-- hotkey registration failures
-- sequence execution start/stop
-- invalid steps
+After the host window handle exists:
 
-#### 3. Define versioning and migration rules
-As profile/config formats evolve, add a simple migration approach.
+- call `Initialize(handle)` on `IGlobalHotkey`
+- register the active profile hotkey
+- hook WPF window message forwarding to `HandleWindowMessage(...)`
+- on `HotkeyPressed`, call `IEngine.ToggleExecutionAsync()`
 
-#### 4. Review DI boundaries
-By this point, revisit service lifetimes and confirm they still make sense.
+#### Important rule
 
-### Exit criteria
-This phase is complete when the app can be used, debugged, and extended without fragile behavior.
+Do not use the hotkey to call `EnableAsync()`.
+It should only toggle execution when the engine is already enabled.
 
----
+#### Why this path
 
-## Guidance on key token usage right now
+This exactly matches the current engine design and the intended tray app semantics.
 
-Until a centralized key token catalog is added, the safest usage pattern is:
+### Step 4. Keep the first settings UI narrow
 
-- only use keys that are already supported by `KeyCodeMapper`
-- avoid arbitrary text input for key names in the UI
-- prefer fixed selections in the UI layer
-- store exactly the token names expected by the mapper
+#### Work
 
-Examples of safe current tokens include:
+The first real WPF settings surface should only need:
 
-- `A` through `Z`
-- `0` through `9`
-- `F1` through `F12`
-- `Enter`
-- `Escape`
-- `Space`
-- `Tab`
-- `Left`, `Right`, `Up`, `Down`
-- `Ctrl`, `Control`, `Alt`, `Shift`
-- `LeftCtrl`, `RightCtrl`, `LeftShift`, `RightShift`, `LeftAlt`, `RightAlt`
-- `Win`, `LWin`, `RWin`
+- active profile selector
+- start/stop hotkey editor
+- single-input target editor
+- sequence mode toggle
+- sequence list and step list
+- import/export actions
+- interval and stop-count settings
+- schedule start/stop controls
 
-This is the biggest usability gap left at the current stopping point, and it should be addressed early in the next phase.
+#### Why this path
 
----
+These are the fields already supported by the current models. Building them first makes the UI exercise existing backend capabilities instead of inventing new ones.
 
-## Go/No-Go guidance for the current stopping point
+### Step 5. Keep view logic separate from backend logic
 
-### Go
-Proceed from this checkpoint if your goal is to begin implementing:
+#### Work
 
-- engine playback
-- WPF hotkey hookup
-- profile persistence
-- step editor UI
+Use WPF to bind and dispatch commands, but keep:
 
-The platform adapter layer is far enough along for those next steps.
+- input execution in Engine
+- persistence in Infrastructure
+- native hotkey and input in Input.Windows
 
-### No-Go
-Do not keep expanding `Input.Windows` right now unless you specifically need:
+Code-behind should mainly own host-specific concerns such as tray icon lifecycle, native message forwarding, and opening windows.
 
-- cursor movement
-- cursor position capture
-- additional key mappings beyond the current supported catalog
-- input recording
+#### Why this path
 
-Those are future additions, not blockers for the next application phases.
+That keeps future UI changes from destabilizing backend behavior.
+
+### Phase 6 exit checklist
+
+- [ ] tray icon exists with minimum context menu actions
+- [ ] hotkey registration is wired to the host window
+- [ ] settings window can edit and save the active profile
+- [ ] WPF remains a host/presentation layer
 
 ---
 
-## Recommended next concrete task
+## Suggested detailed task list by project
 
-If continuing immediately after this checkpoint, the best next step is:
+## `AutoInputPlus.Core`
 
-**Implement `ISequenceRunner` and the first execution validation path in `Engine`.**
+### Near-term tasks
 
-That gives the rest of the solution something real to consume and keeps progress moving outward from the now-stable platform package.
+- [ ] add XML comments where backend behavior is still ambiguous
+- [ ] define and document rules for invalid sequence steps
+- [ ] keep `InputKey` enum as the supported key catalog
+- [ ] avoid adding UI-only concerns to models
+
+### Add only when needed
+
+- [ ] profile-level `IsEnabled` flag, only if profile selection UX needs it
+- [ ] sequence-level enabled flag, only if multiple saved sequences need selective activation beyond selected index
+- [ ] cursor position data, only if sequence authoring explicitly requires pointer movement
+
+## `AutoInputPlus.Input.Windows`
+
+### Near-term tasks
+
+- [ ] hotkey lifecycle tests
+- [ ] mapper edge-case tests
+- [ ] input sender behavior tests where practical
+- [ ] preserve one-hotkey design
+
+### Add only when needed
+
+- [ ] cursor movement send support
+- [ ] cursor coordinate reads
+- [ ] extra mouse buttons beyond left/right/middle, only after Core model expansion
+
+## `AutoInputPlus.Engine`
+
+### Near-term tasks
+
+- [ ] inject dependencies into `AutoInputEngine`
+- [ ] implement single-input execution loop
+- [ ] implement cancellation and cleanup
+- [ ] implement real `SequenceRunner`
+- [ ] add engine tests
+
+### Add only when needed
+
+- [ ] scheduled start background timer support
+- [ ] richer error reporting surface
+- [ ] progress or telemetry events for UI display
+
+## `AutoInputPlus.Infrastructure`
+
+### Near-term tasks
+
+- [ ] centralize file paths
+- [ ] implement config store
+- [ ] implement profile store
+- [ ] define serializer options once
+- [ ] add roundtrip file tests
+
+### Add only when needed
+
+- [ ] backup file strategy
+- [ ] migration helpers for future profile schema changes
+- [ ] file locking or atomic write hardening after multi-process needs appear
+
+## `AutoInputPlus.Wpf`
+
+### Near-term tasks after backend stability
+
+- [ ] tray shell
+- [ ] hotkey host integration
+- [ ] minimal settings UI
+- [ ] active profile loading and saving
+- [ ] engine state display
+
+### Add only when needed
+
+- [ ] richer editor UX
+- [ ] drag/drop step reordering UI polish
+- [ ] onboarding, tips, or profile templates
+
+---
+
+## Suggested implementation notes for specific existing classes
+
+## `AutoInputEngine`
+
+Use the existing class as the state owner. Expand it rather than replacing it.
+
+### Small-step plan
+
+1. add injected dependencies
+2. add a private cancellation token source
+3. add a private execution task reference
+4. add a lightweight transition lock
+5. implement single-input execution
+6. delegate sequence execution to `ISequenceRunner`
+7. add cleanup logic for held down key or mouse button release
+
+### Avoid
+
+- moving state management into WPF
+- letting `Input.Windows` decide profile logic
+- creating a second engine class for simple versus sequence mode
+
+## `SequenceRunner`
+
+Use the current class and add `IInputSender` plus validation.
+
+### Small-step plan
+
+1. inject `IInputSender`
+2. add private validation helper methods
+3. execute delays and actions in order
+4. add cancellation-aware delay handling
+5. add tests with a fake `IInputSender`
+
+### Avoid
+
+- making sequence rules depend on the UI editor
+- auto-correcting malformed steps silently during execution
+
+## `ProfileManager`
+
+Keep it as the active profile holder for now.
+
+### Small-step plan
+
+1. keep `SetActiveProfile(...)`
+2. add small helper methods only when the UI actually needs them, such as selecting a sequence by index
+3. keep profile persistence orchestration elsewhere unless it clearly belongs here later
+
+### Avoid
+
+- turning `ProfileManager` into the disk persistence class
+- expanding it into a catch-all application coordinator
+
+## `AppConfigurationStore` and `InputProfileStore`
+
+Use these current classes directly. Add internal helpers under Infrastructure if path or serializer reuse starts repeating.
+
+### Small-step plan
+
+1. define app data root helper
+2. add serializer options helper
+3. implement safe read and write methods
+4. add temp-folder based tests
+
+### Avoid
+
+- introducing a database
+- pushing file IO into WPF startup code
+
+## `ProfileExchange`
+
+Use the current class as the single import/export path.
+
+### Small-step plan
+
+1. reuse profile JSON serialization
+2. add import validation
+3. add export/import tests
+4. only add format versioning when required
+
+### Avoid
+
+- custom binary formats
+- compressed share strings in the first pass
+- different schemas for persistence versus export unless a strong reason appears later
+
+---
+
+## Definition of done for the backend before serious WPF work
+
+Backend readiness is reached when all of the following are true:
+
+- [ ] engine can be enabled and disabled independently from execution start/stop
+- [ ] engine can execute single-input mode from the active profile
+- [ ] engine can execute the selected sequence from the active profile
+- [ ] engine can stop cleanly and release held inputs
+- [ ] app configuration saves and loads from disk
+- [ ] profiles save and load from disk
+- [ ] profile import/export works with validation
+- [ ] global hotkey wiring is ready for host integration
+- [ ] Engine and Infrastructure have real tests instead of placeholder tests
+
+At that point, WPF can move from shell-only to actual tray app plus settings editor without forcing backend redesign.
+
+---
+
+## Final guidance
+
+The repository is already organized in a good direction. The next work should focus on finishing execution and persistence, not reshaping the whole solution.
+
+The strongest existing decisions worth preserving are:
+
+- app-level contracts in `Core`
+- Windows-specific input in `Input.Windows`
+- engine state ownership in `Engine`
+- persistence behind interfaces in `Infrastructure`
+- WPF as host and settings surface rather than business logic
+
+The most effective next milestone is:
+
+1. finish Engine execution
+2. finish Infrastructure persistence
+3. add tests around both
+4. then wire the tray-first WPF host
+
+That order keeps the codebase incremental, testable, and aligned with the intended final application behavior.

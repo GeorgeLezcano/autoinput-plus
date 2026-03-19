@@ -2,8 +2,36 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="AutoInput Plus"
-        Height="450"
-        Width="800">
-    <Grid>
+        Height="500"
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="12">
+        <TabControl x:Name="RootTabControl">
+            <TabItem x:Name="SettingsTab" Header="Settings">
+                <Grid Margin="16">
+                    <StackPanel>
+                        <TextBlock Text="Settings"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,12" />
+                        <TextBlock Text="Settings UI will be added here."
+                                   FontSize="14" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="AboutTab" Header="About">
+                <Grid Margin="16">
+                    <StackPanel>
+                        <TextBlock Text="About AutoInput Plus"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,12" />
+                        <TextBlock Text="Version and metadata can be shown here later."
+                                   Margin="0,0,0,6" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
