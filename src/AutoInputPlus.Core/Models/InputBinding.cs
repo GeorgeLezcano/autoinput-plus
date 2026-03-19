@@ -37,7 +37,7 @@ public sealed record InputBinding
     /// <exception cref="InvalidOperationException">
     /// Thrown when the binding does not target exactly one input source.
     /// </exception>
-    private InputBinding(InputKey? key, MouseButton? mouseButton)
+    internal InputBinding(InputKey? key, MouseButton? mouseButton)
     {
         bool hasKey = key.HasValue;
         bool hasMouseButton = mouseButton.HasValue;

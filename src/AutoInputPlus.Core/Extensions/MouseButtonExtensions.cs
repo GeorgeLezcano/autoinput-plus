@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Enums;
 
 namespace AutoInputPlus.Core.Extensions;
@@ -5,6 +6,7 @@ namespace AutoInputPlus.Core.Extensions;
 /// <summary>
 /// Provides display helpers for <see cref="MouseButton"/> values.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class MouseButtonExtensions
 {
     /// <summary>

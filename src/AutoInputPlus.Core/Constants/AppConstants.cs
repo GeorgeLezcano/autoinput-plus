@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Models;
 
@@ -6,6 +7,7 @@ namespace AutoInputPlus.Core.Constants;
 /// <summary>
 /// Default application constants.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AppConstants
 {
     #region Default Values
