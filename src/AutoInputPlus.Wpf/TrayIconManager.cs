@@ -1,7 +1,7 @@
 using System.IO;
 using System.Windows.Resources;
+using AutoInputPlus.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Forms = System.Windows.Forms;
 using WpfApplication = System.Windows.Application;
 
 namespace AutoInputPlus.Wpf;
@@ -14,6 +14,7 @@ public sealed class TrayIconManager : IDisposable
     private readonly IServiceProvider _serviceProvider;
     private readonly NotifyIcon _notifyIcon;
     private bool _disposed;
+    private readonly IEngine _engine;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TrayIconManager"/> class.
@@ -21,15 +22,17 @@ public sealed class TrayIconManager : IDisposable
     /// <param name="serviceProvider">
     /// The application service provider.
     /// </param>
-    public TrayIconManager(IServiceProvider serviceProvider)
+    /// <param name="engine">The automation engine</param>
+    public TrayIconManager(IServiceProvider serviceProvider, IEngine engine)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _engine = engine;
 
         _notifyIcon = new NotifyIcon
         {
             Icon = LoadTrayIcon() ?? SystemIcons.Application,
             Visible = true,
-            Text = "AutoInput Plus", // TODO No hardcode
+            Text = $"AutoInput Plus\n{GetEngineStatusText()}",
             ContextMenuStrip = BuildContextMenu()
         };
 
@@ -40,7 +43,8 @@ public sealed class TrayIconManager : IDisposable
     {
         if (e.Button == MouseButtons.Left)
         {
-            ShowSettings();
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.ShowSettingsTab();
         }
     }
 
@@ -48,30 +52,30 @@ public sealed class TrayIconManager : IDisposable
     {
         var menu = new ContextMenuStrip();
 
-        var statusItem = new ToolStripMenuItem($"Engine: {GetEngineStatusText()}")
+        var statusItem = new ToolStripMenuItem(GetEngineStatusText())
         {
             Enabled = false
         };
 
-        var settingsItem = new Forms.ToolStripMenuItem("Settings");
+        var settingsItem = new ToolStripMenuItem("Settings");
         settingsItem.Click += (_, _) => ShowSettings();
 
-        var aboutItem = new Forms.ToolStripMenuItem("About");
+        var aboutItem = new ToolStripMenuItem("About");
         aboutItem.Click += (_, _) => ShowAbout();
 
-        var exitItem = new Forms.ToolStripMenuItem("Exit");
+        var exitItem = new ToolStripMenuItem("Exit");
         exitItem.Click += (_, _) => ExitApplication();
 
         menu.Opening += (_, _) =>
         {
-            statusItem.Text = $"Engine: {GetEngineStatusText()}"; //TODO NO hardcode
+            statusItem.Text = GetEngineStatusText();
         };
 
         menu.Items.Add(statusItem);
-        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(settingsItem);
         menu.Items.Add(aboutItem);
-        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(exitItem);
 
         return menu;
@@ -82,7 +86,7 @@ public sealed class TrayIconManager : IDisposable
         WpfApplication.Current.Dispatcher.Invoke(() =>
         {
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.ShowSettingsPage();
+            mainWindow.ShowSettingsTab();
         });
     }
 
@@ -91,7 +95,7 @@ public sealed class TrayIconManager : IDisposable
         WpfApplication.Current.Dispatcher.Invoke(() =>
         {
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.ShowAboutPage();
+            mainWindow.ShowAboutTab();
         });
     }
 
@@ -107,9 +111,9 @@ public sealed class TrayIconManager : IDisposable
         });
     }
 
-    private static string GetEngineStatusText()
+    private string GetEngineStatusText()
     {
-        return "Disabled"; //TODO No hardcode
+        return $"Status: {_engine.State}";
     }
 
     private static Icon? LoadTrayIcon()

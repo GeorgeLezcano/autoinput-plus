@@ -21,19 +21,29 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    
     /// <summary>
-    /// Shows the main window and selects the settings page.
+    /// Shows the main window and selects the settings tab.
     /// </summary>
-    public void ShowSettingsPage()
+    public void ShowSettingsTab()
     {
         ShowWindow();
         RootTabControl.SelectedItem = SettingsTab;
     }
 
     /// <summary>
-    /// Shows the main window and selects the about page.
+    /// Shows the main window and selects the about tab.
     /// </summary>
-    public void ShowAboutPage()
+    public void ShowSequenceTab()
+    {
+        ShowWindow();
+        RootTabControl.SelectedItem = SequenceTab;
+    }
+
+    /// <summary>
+    /// Shows the main window and selects the about tab.
+    /// </summary>
+    public void ShowAboutTab()
     {
         ShowWindow();
         RootTabControl.SelectedItem = AboutTab;

@@ -7,28 +7,45 @@
         WindowStartupLocation="CenterScreen">
     <Grid Margin="12">
         <TabControl x:Name="RootTabControl">
-            <TabItem x:Name="SettingsTab" Header="Settings">
+
+            <TabItem x:Name="SettingsTab"
+                     Header="Settings">
                 <Grid Margin="16">
                     <StackPanel>
                         <TextBlock Text="Settings"
                                    FontSize="22"
                                    FontWeight="SemiBold"
-                                   Margin="0,0,0,12" />
+                                   Margin="0,0,0,12"/>
                         <TextBlock Text="Settings UI will be added here."
-                                   FontSize="14" />
+                                   FontSize="14"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            
+            <TabItem x:Name="SequenceTab"
+                     Header="Sequence">
+                <Grid Margin="16">
+                    <StackPanel>
+                        <TextBlock Text="Sequence"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,12"/>
+                        <TextBlock Text="Sequence TAB UI will be added here."
+                                   FontSize="14"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
 
-            <TabItem x:Name="AboutTab" Header="About">
+            <TabItem x:Name="AboutTab"
+                     Header="About">
                 <Grid Margin="16">
                     <StackPanel>
                         <TextBlock Text="About AutoInput Plus"
                                    FontSize="22"
                                    FontWeight="SemiBold"
-                                   Margin="0,0,0,12" />
+                                   Margin="0,0,0,12"/>
                         <TextBlock Text="Version and metadata can be shown here later."
-                                   Margin="0,0,0,6" />
+                                   Margin="0,0,0,6"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
