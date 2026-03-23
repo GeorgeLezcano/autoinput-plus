@@ -1,0 +1,304 @@
+<UserControl x:Class="AutoInputPlus.Wpf.Views.SettingsTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F4F6F8">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Settings"
+                           FontSize="24"
+                           FontWeight="SemiBold"/>
+                <TextBlock Text="Configure how the currently selected profile runs."
+                           Margin="0,6,0,0"
+                           Foreground="#5F6B76"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <!-- Run Configuration -->
+            <Border Grid.Row="2"
+                    Background="White"
+                    BorderBrush="#D9E0E7"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="14"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Run Configuration"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Choose the run mode, target input, interval, and stop behavior for the current profile."
+                                   Margin="0,6,0,0"
+                                   Foreground="#5F6B76"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <!-- Mode -->
+                    <Border Grid.Row="2"
+                            Background="#F8FAFC"
+                            BorderBrush="#D9E0E7"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="Mode"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="SingleInputModeRadioButton"
+                                             GroupName="ExecutionMode"
+                                             Content="Single Input"
+                                             IsChecked="True"
+                                             Margin="0,0,20,0"/>
+                                <RadioButton x:Name="SequenceModeRadioButton"
+                                             GroupName="ExecutionMode"
+                                             Content="Sequence Mode"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Sequence Mode uses the sequences saved under the currently selected profile."
+                                       Margin="0,10,0,0"
+                                       Foreground="#5F6B76"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Input settings -->
+                    <Border Grid.Row="4"
+                            Background="#F8FAFC"
+                            BorderBrush="#D9E0E7"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="12"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="16"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="Input Settings"
+                                       FontWeight="SemiBold"/>
+
+                            <!-- Hotkey / Target -->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Start / Stop Hotkey"
+                                               Margin="0,0,0,6"/>
+                                    <Button x:Name="CaptureHotkeyButton"
+                                            Height="34"
+                                            Content="Set Hotkey"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Target Key / Button"
+                                               Margin="0,0,0,6"/>
+                                    <Button x:Name="CaptureTargetKeyButton"
+                                            Height="34"
+                                            Content="Set Target"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Behavior layout -->
+                            <Grid Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Left side -->
+                                <Border Grid.Column="0"
+                                        Background="White"
+                                        BorderBrush="#D9E0E7"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="12"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Text="Input Behavior"
+                                                   FontWeight="SemiBold"/>
+
+                                        <StackPanel Grid.Row="2">
+                                            <TextBlock Text="Interval (ms)"
+                                                       Margin="0,0,0,6"/>
+                                            <TextBox x:Name="IntervalTextBox"
+                                                     Height="34"
+                                                     Width="180"
+                                                     Text="100"/>
+                                        </StackPanel>
+
+                                        <CheckBox Grid.Row="4"
+                                                  x:Name="HoldCheckBox">
+                                            <TextBlock Text="Hold target instead of repeating input"
+                                                       TextWrapping="Wrap"/>
+                                        </CheckBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Right side -->
+                                <Border Grid.Column="2"
+                                        Background="White"
+                                        BorderBrush="#D9E0E7"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="10"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Text="Run Behavior"
+                                                   FontWeight="SemiBold"/>
+
+                                        <RadioButton Grid.Row="2"
+                                                     x:Name="RunUntilStopRadioButton"
+                                                     GroupName="RunMode"
+                                                     Content="Run until manually stopped"
+                                                     IsChecked="True"/>
+
+                                        <RadioButton Grid.Row="4"
+                                                     x:Name="RunForSetCountRadioButton"
+                                                     GroupName="RunMode"
+                                                     Content="Run for set count"/>
+
+                                        <StackPanel Grid.Row="6">
+                                            <TextBlock Text="Run Count"
+                                                       Margin="0,0,0,6"/>
+                                            <TextBox x:Name="RunCountTextBox"
+                                                     Height="34"
+                                                     Width="180"
+                                                     Text="100"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Schedule -->
+            <Border Grid.Row="4"
+                    Background="White"
+                    BorderBrush="#D9E0E7"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="Schedule"
+                               FontSize="18"
+                               FontWeight="SemiBold"/>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <CheckBox x:Name="ScheduleStartEnabledCheckBox"
+                                      Content="Use scheduled start"
+                                      Margin="0,0,0,8"/>
+                            <TextBlock Text="Start Date / Time"
+                                       Margin="0,0,0,6"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DatePicker x:Name="ScheduleStartDatePicker"
+                                            Grid.Column="0"
+                                            Height="34"/>
+                                <TextBox x:Name="ScheduleStartTimeTextBox"
+                                         Grid.Column="2"
+                                         Height="34"
+                                         Text="08:00"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <CheckBox x:Name="ScheduleStopEnabledCheckBox"
+                                      Content="Use scheduled stop"
+                                      Margin="0,0,0,8"/>
+                            <TextBlock Text="Stop Date / Time"
+                                       Margin="0,0,0,6"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DatePicker x:Name="ScheduleStopDatePicker"
+                                            Grid.Column="0"
+                                            Height="34"/>
+                                <TextBox x:Name="ScheduleStopTimeTextBox"
+                                         Grid.Column="2"
+                                         Height="34"
+                                         Text="17:00"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Grid.Row="4"
+                               Text="When schedule logic is added, start or stop times in the past should reset automatically."
+                               Foreground="#5F6B76"
+                               TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -8,9 +8,6 @@ namespace AutoInputPlus.Wpf;
 /// </summary>
 public partial class MainWindow : Window
 {
-    // TODO In vscode, A lot of method are red or not recognized. Figure out if there is a way to support this in the IDE.
-    // Application still runs and compiles, its just visual. Maybe consider using Visual Studio instead?
-
     private bool _allowClose;
 
     /// <summary>
@@ -21,7 +18,6 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    
     /// <summary>
     /// Shows the main window and selects the settings tab.
     /// </summary>
@@ -32,7 +28,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Shows the main window and selects the about tab.
+    /// Shows the main window and selects the sequence tab.
     /// </summary>
     public void ShowSequenceTab()
     {
@@ -60,9 +56,7 @@ public partial class MainWindow : Window
     /// <summary>
     /// Handles window closing.
     /// </summary>
-    /// <param name="e">
-    /// Closing event data.
-    /// </param>
+    /// <param name="e">Closing event data.</param>
     protected override void OnClosing(CancelEventArgs e)
     {
         if (!_allowClose)
