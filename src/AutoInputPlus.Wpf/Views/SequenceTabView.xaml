@@ -10,177 +10,116 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Header -->
         <StackPanel Grid.Row="0">
             <TextBlock Text="Sequence"
                        FontSize="24"
                        FontWeight="SemiBold"/>
-            <TextBlock Text="Create and edit the sequences available for the currently loaded profile."
-                       Margin="0,6,0,0"
-                       Foreground="#5F6B76"
-                       TextWrapping="Wrap"/>
         </StackPanel>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="220"/>
                 <ColumnDefinition Width="16"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left -->
+            <!-- LEFT -->
             <Border Grid.Column="0"
                     Background="White"
                     BorderBrush="#D9E0E7"
                     BorderThickness="1"
                     CornerRadius="10"
-                    Padding="16">
+                    Padding="12">
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="8"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="8"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="Saved Sequences"
-                               FontSize="18"
+                    <TextBlock Text="Saved Sequences"
                                FontWeight="SemiBold"/>
 
-                    <TextBlock Grid.Row="2"
-                               Text="Current profile: Default Profile"
-                               Foreground="#5F6B76"/>
+                    <ListBox Grid.Row="2"/>
 
-                    <ListBox Grid.Row="4"
-                             x:Name="SequencesListBox">
-                        <ListBoxItem Content="Primary Sequence"/>
-                        <ListBoxItem Content="Combat Loop"/>
-                        <ListBoxItem Content="Quick Test"/>
-                    </ListBox>
+                    <!-- Buttons FULL WIDTH -->
+                    <StackPanel Grid.Row="4">
+                        <Button Content="New"
+                                Height="32"
+                                Margin="0,0,0,6"
+                                HorizontalContentAlignment="Center"/>
 
-                    <StackPanel Grid.Row="6">
-                        <Button Content="New Sequence"
-                                Height="34"
-                                Margin="0,0,0,8"/>
-                        <Button Content="Rename Sequence"
-                                Height="34"
-                                Margin="0,0,0,8"/>
-                        <Button Content="Delete Sequence"
-                                Height="34"/>
+                        <Button Content="Rename"
+                                Height="32"
+                                Margin="0,0,0,6"
+                                HorizontalContentAlignment="Center"/>
+
+                        <Button Content="Delete"
+                                Height="32"
+                                HorizontalContentAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Right -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="16"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <!-- RIGHT -->
+            <Border Grid.Column="2"
+                    Background="White"
+                    BorderBrush="#D9E0E7"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="16">
 
-                <Border Grid.Row="0"
-                        Background="White"
-                        BorderBrush="#D9E0E7"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        Padding="16">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Selected Sequence"
-                                       FontSize="18"
-                                       FontWeight="SemiBold"/>
-                            <TextBlock Text="Name"
-                                       Margin="0,12,0,6"/>
-                            <TextBox Height="32"
-                                     Text="Primary Sequence"/>
-                        </StackPanel>
+                    <TextBlock Text="Steps"
+                               FontWeight="SemiBold"/>
 
-                        <StackPanel Grid.Column="2"
-                                    VerticalAlignment="Bottom">
-                            <Button Content="Save Changes"
-                                    Width="130"
-                                    Height="34"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                    <DataGrid Grid.Row="2"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column">
 
-                <Border Grid.Row="2"
-                        Background="White"
-                        BorderBrush="#D9E0E7"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        Padding="16">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="12"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#"
+                                                Width="50"/>
 
-                        <TextBlock Grid.Row="0"
-                                   Text="Steps"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="Target"
+                                                Width="*"/>
 
-                        <DataGrid Grid.Row="2"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="False"
-                                  HeadersVisibility="Column">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="#"
-                                                    Width="50"
-                                                    Binding="{Binding StepNumber}"/>
-                                <DataGridTextColumn Header="Action"
-                                                    Width="*"
-                                                    Binding="{Binding ActionType}"/>
-                                <DataGridTextColumn Header="Target"
-                                                    Width="140"
-                                                    Binding="{Binding Target}"/>
-                                <DataGridTextColumn Header="Duration (ms)"
-                                                    Width="120"
-                                                    Binding="{Binding Duration}"/>
-                                <DataGridTextColumn Header="Delay After (ms)"
-                                                    Width="120"
-                                                    Binding="{Binding DelayAfter}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                            <DataGridCheckBoxColumn Header="Hold"
+                                                    Width="70"/>
 
-                        <WrapPanel Grid.Row="4">
-                            <Button Content="Add Step"
-                                    Width="100"
-                                    Height="34"
-                                    Margin="0,0,8,8"/>
-                            <Button Content="Edit Step"
-                                    Width="100"
-                                    Height="34"
-                                    Margin="0,0,8,8"/>
-                            <Button Content="Remove Step"
-                                    Width="100"
-                                    Height="34"
-                                    Margin="0,0,8,8"/>
-                            <Button Content="Move Up"
-                                    Width="100"
-                                    Height="34"
-                                    Margin="0,0,8,8"/>
-                            <Button Content="Move Down"
-                                    Width="100"
-                                    Height="34"/>
-                        </WrapPanel>
-                    </Grid>
-                </Border>
-            </Grid>
+                            <DataGridTextColumn Header="Duration"
+                                                Width="120"/>
+
+                            <DataGridTextColumn Header="Delay"
+                                                Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Grid.Row="4"
+                                Orientation="Horizontal">
+                        <Button Content="Add"
+                                Width="80"
+                                Height="32"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Remove"
+                                Width="80"
+                                Height="32"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
         </Grid>
     </Grid>
 </UserControl>
