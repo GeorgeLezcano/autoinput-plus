@@ -1,7 +1,7 @@
 <UserControl x:Class="AutoInputPlus.Wpf.Views.SettingsTabView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="#F4F6F8">
+             Background="{DynamicResource AppBackgroundBrush}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="16">
@@ -13,23 +13,18 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
             <StackPanel Grid.Row="0">
                 <TextBlock Text="Settings"
                            FontSize="24"
                            FontWeight="SemiBold"/>
                 <TextBlock Text="Configure how the current profile behaves."
                            Margin="0,6,0,0"
-                           Foreground="#5F6B76"/>
+                           Foreground="{DynamicResource TextBrushSecondary}"/>
             </StackPanel>
 
-            <!-- Run Configuration -->
             <Border Grid.Row="2"
-                    Background="White"
-                    BorderBrush="#D9E0E7"
-                    BorderThickness="1"
-                    CornerRadius="10"
-                    Padding="16">
+                    Padding="16"
+                    Style="{DynamicResource CardBorderStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -46,13 +41,9 @@
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
-                    <!-- Mode -->
                     <Border Grid.Row="2"
-                            Background="#F8FAFC"
-                            BorderBrush="#D9E0E7"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12">
+                            Padding="12"
+                            Style="{DynamicResource InnerPanelBorderStyle}">
                         <StackPanel>
                             <TextBlock Text="Mode"
                                        FontWeight="SemiBold"
@@ -71,13 +62,9 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Key Settings -->
                     <Border Grid.Row="4"
-                            Background="#F8FAFC"
-                            BorderBrush="#D9E0E7"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12">
+                            Padding="12"
+                            Style="{DynamicResource InnerPanelBorderStyle}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -119,13 +106,9 @@
                         </Grid>
                     </Border>
 
-                    <!-- Behavior -->
                     <Border Grid.Row="6"
-                            Background="#F8FAFC"
-                            BorderBrush="#D9E0E7"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12">
+                            Padding="12"
+                            Style="{DynamicResource InnerPanelBorderStyle}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
@@ -133,13 +116,9 @@
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Left side -->
                             <Border Grid.Column="0"
-                                    Background="White"
-                                    BorderBrush="#D9E0E7"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="12">
+                                    Padding="12"
+                                    Style="{DynamicResource InsetCardBorderStyle}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -172,13 +151,9 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Right side -->
                             <Border Grid.Column="2"
-                                    Background="White"
-                                    BorderBrush="#D9E0E7"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="12">
+                                    Padding="12"
+                                    Style="{DynamicResource InsetCardBorderStyle}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -223,13 +198,9 @@
                 </Grid>
             </Border>
 
-            <!-- Schedule -->
             <Border Grid.Row="4"
-                    Background="White"
-                    BorderBrush="#D9E0E7"
-                    BorderThickness="1"
-                    CornerRadius="10"
-                    Padding="16">
+                    Padding="16"
+                    Style="{DynamicResource CardBorderStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -249,7 +220,6 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Start -->
                         <StackPanel Grid.Column="0">
                             <CheckBox x:Name="ScheduleStartEnabledCheckBox"
                                       Content="Use scheduled start"
@@ -270,8 +240,8 @@
                                             HorizontalContentAlignment="Center"/>
 
                                 <Border Grid.Column="2"
-                                        Background="White"
-                                        BorderBrush="#D9E0E7"
+                                        Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrushSoft}"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="8,6">
@@ -308,7 +278,6 @@
                             </Grid>
                         </StackPanel>
 
-                        <!-- Stop -->
                         <StackPanel Grid.Column="2">
                             <CheckBox x:Name="ScheduleStopEnabledCheckBox"
                                       Content="Use scheduled stop"
@@ -329,8 +298,8 @@
                                             HorizontalContentAlignment="Center"/>
 
                                 <Border Grid.Column="2"
-                                        Background="White"
-                                        BorderBrush="#D9E0E7"
+                                        Background="{DynamicResource SurfaceBrush}"
+                                        BorderBrush="{DynamicResource BorderBrushSoft}"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="8,6">

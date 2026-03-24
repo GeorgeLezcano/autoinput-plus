@@ -4,7 +4,7 @@ using AutoInputPlus.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using WpfApplication = System.Windows.Application;
 
-namespace AutoInputPlus.Wpf;
+namespace AutoInputPlus.Wpf.Services;
 
 /// <summary>
 /// Manages the system tray icon and related interactions.
@@ -48,7 +48,7 @@ public sealed class TrayIconManager : IDisposable
         }
     }
 
-    private ContextMenuStrip BuildContextMenu() // TODO These will be someplace else, later language aware....
+    private ContextMenuStrip BuildContextMenu()
     {
         var menu = new ContextMenuStrip();
 

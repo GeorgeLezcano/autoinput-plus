@@ -8,30 +8,39 @@
         MinHeight="640"
         MinWidth="980"
         WindowStartupLocation="CenterScreen"
-        Background="#F4F6F8">
+        Background="{DynamicResource AppBackgroundBrush}">
 
     <DockPanel>
 
         <Menu DockPanel.Dock="Top"
-              Background="White"
-              BorderBrush="#D9E0E7"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrushSoft}"
               BorderThickness="0,0,0,1">
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="Import Profile..." />
-                <MenuItem Header="Export Profile..." />
-                <Separator />
-                <MenuItem Header="Open Data Folder" />
+                <MenuItem Header="Import Profile..."/>
+                <MenuItem Header="Export Profile..."/>
+                <Separator/>
+                <MenuItem Header="Open Data Folder"/>
+            </MenuItem>
+
+            <MenuItem Header="_Themes">
+                <MenuItem x:Name="LightBlueThemeMenuItem"
+                          Header="_Light Blue"
+                          IsCheckable="True"
+                          Click="LightBlueThemeMenuItem_Click"/>
+
+                <MenuItem x:Name="DarkBlueThemeMenuItem"
+                          Header="_Dark Blue"
+                          IsCheckable="True"
+                          Click="DarkBlueThemeMenuItem_Click"/>
             </MenuItem>
         </Menu>
 
         <Border DockPanel.Dock="Top"
                 Margin="12,12,12,0"
                 Padding="12"
-                Background="White"
-                BorderBrush="#D9E0E7"
-                BorderThickness="1"
-                CornerRadius="10">
+                Style="{DynamicResource CardBorderStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -39,14 +48,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Engine -->
                 <Border Grid.Column="0"
-                        Background="#F8FAFC"
-                        BorderBrush="#D9E0E7"
-                        BorderThickness="1"
-                        CornerRadius="8"
                         Padding="12,10"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource InnerPanelBorderStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -75,29 +80,25 @@
                             <TextBlock Text="Status:"
                                        VerticalAlignment="Center"
                                        Margin="0,0,8,0"
-                                       Foreground="#5F6B76"/>
+                                       Foreground="{DynamicResource TextBrushSecondary}"/>
                             <Border CornerRadius="12"
-                                    Background="#E5E7EB"
+                                    Background="{DynamicResource StatusNeutralBrush}"
                                     Padding="10,4"
                                     VerticalAlignment="Center">
                                 <TextBlock x:Name="EngineStatusTextBlock"
                                            Text="Disabled"
                                            FontSize="14"
                                            FontWeight="SemiBold"
-                                           Foreground="#374151"/>
+                                           Foreground="{DynamicResource StatusNeutralTextBrush}"/>
                             </Border>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Profile -->
                 <Border Grid.Column="2"
-                        Background="#F8FAFC"
-                        BorderBrush="#D9E0E7"
-                        BorderThickness="1"
-                        CornerRadius="8"
                         Padding="12,10"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource InnerPanelBorderStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -157,17 +158,17 @@
 
                 <TabItem x:Name="SettingsTab"
                          Header="Settings">
-                    <views:SettingsTabView />
+                    <views:SettingsTabView/>
                 </TabItem>
 
                 <TabItem x:Name="SequenceTab"
                          Header="Sequence">
-                    <views:SequenceTabView />
+                    <views:SequenceTabView/>
                 </TabItem>
 
                 <TabItem x:Name="AboutTab"
                          Header="About">
-                    <views:AboutTabView />
+                    <views:AboutTabView/>
                 </TabItem>
 
             </TabControl>

@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
+using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Engine;
 using AutoInputPlus.Infrastructure;
 using AutoInputPlus.Input.Windows;
+using AutoInputPlus.Wpf.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Application = System.Windows.Application;
 
@@ -54,6 +56,8 @@ public partial class App : Application
         _serviceProvider = services.BuildServiceProvider();
 
         _trayIconManager = _serviceProvider.GetRequiredService<TrayIconManager>();
+
+        ThemeManager.ApplyTheme(AppTheme.LightBlue);
     }
 
     /// <summary>
