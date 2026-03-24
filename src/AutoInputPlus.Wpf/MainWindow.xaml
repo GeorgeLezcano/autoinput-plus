@@ -18,22 +18,115 @@
               BorderThickness="0,0,0,1">
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="Import Profile..."/>
-                <MenuItem Header="Export Profile..."/>
+                <MenuItem Header="Import Profile...">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
+
+                <MenuItem Header="Export Profile...">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
+
                 <Separator/>
-                <MenuItem Header="Open Data Folder"/>
+
+                <MenuItem Header="Open Data Folder">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="_Themes">
                 <MenuItem x:Name="LightBlueThemeMenuItem"
                           Header="_Light Blue"
                           IsCheckable="True"
-                          Click="LightBlueThemeMenuItem_Click"/>
+                          Click="LightBlueThemeMenuItem_Click">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
 
                 <MenuItem x:Name="DarkBlueThemeMenuItem"
                           Header="_Dark Blue"
                           IsCheckable="True"
-                          Click="DarkBlueThemeMenuItem_Click"/>
+                          Click="DarkBlueThemeMenuItem_Click">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
             </MenuItem>
         </Menu>
 

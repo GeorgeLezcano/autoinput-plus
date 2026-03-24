@@ -47,6 +47,14 @@
                          Color="#EAF3FF"/>
         <SolidColorBrush x:Key="DropDownSelectedBrush"
                          Color="#D9EAFE"/>
+        <SolidColorBrush x:Key="MenuSubItemBackgroundBrush"
+                         Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="MenuSubItemForegroundBrush"
+                         Color="#1E2A36"/>
+        <SolidColorBrush x:Key="MenuSubItemHoverBackgroundBrush"
+                         Color="#D9EAFE"/>
+        <SolidColorBrush x:Key="MenuSubItemHoverForegroundBrush"
+                         Color="#0F1722"/>
 
         <!-- Base -->
         <Style TargetType="Window">

@@ -52,15 +52,24 @@
                          Color="#EAF2FB"/>
         <SolidColorBrush x:Key="DatePickerEditorForegroundBrush"
                          Color="#0F1722"/>
-
-        <SolidColorBrush x:Key="CalendarBackgroundBrush"
+        <SolidColorBrush x:Key="DatePickerPopupBackgroundBrush"
                          Color="#16202D"/>
-        <SolidColorBrush x:Key="CalendarForegroundBrush"
+        <SolidColorBrush x:Key="DatePickerPopupForegroundBrush"
                          Color="#EAF2FB"/>
-        <SolidColorBrush x:Key="CalendarHoverBrush"
+        <SolidColorBrush x:Key="DatePickerPopupBorderBrush"
+                         Color="#35506F"/>
+        <SolidColorBrush x:Key="DatePickerPopupHoverBrush"
                          Color="#20334A"/>
-        <SolidColorBrush x:Key="CalendarSelectedBrush"
+        <SolidColorBrush x:Key="DatePickerPopupSelectedBrush"
                          Color="#29476B"/>
+        <SolidColorBrush x:Key="MenuSubItemBackgroundBrush"
+                         Color="#16202D"/>
+        <SolidColorBrush x:Key="MenuSubItemForegroundBrush"
+                         Color="#EAF2FB"/>
+        <SolidColorBrush x:Key="MenuSubItemHoverBackgroundBrush"
+                         Color="#D9EAFE"/>
+        <SolidColorBrush x:Key="MenuSubItemHoverForegroundBrush"
+                         Color="#0F1722"/>
 
         <!-- Base -->
         <Style TargetType="Window">
@@ -392,29 +401,55 @@
                         Value="{StaticResource DatePickerEditorBackgroundBrush}"/>
                 <Setter Property="Foreground"
                         Value="{StaticResource DatePickerEditorForegroundBrush}"/>
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource BorderBrushStrong}"/>
+                <Setter Property="BorderThickness"
+                        Value="1"/>
         </Style>
 
         <Style TargetType="{x:Type Calendar}">
                 <Setter Property="Background"
-                        Value="{StaticResource CalendarBackgroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupBackgroundBrush}"/>
                 <Setter Property="Foreground"
-                        Value="{StaticResource CalendarForegroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupForegroundBrush}"/>
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource DatePickerPopupBorderBrush}"/>
+                <Setter Property="BorderThickness"
+                        Value="1"/>
+        </Style>
+
+        <Style TargetType="{x:Type CalendarItem}">
+                <Setter Property="Background"
+                        Value="{StaticResource DatePickerPopupBackgroundBrush}"/>
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource DatePickerPopupBorderBrush}"/>
+                <Setter Property="BorderThickness"
+                        Value="1"/>
         </Style>
 
         <Style TargetType="{x:Type CalendarButton}">
                 <Setter Property="Background"
-                        Value="{StaticResource CalendarBackgroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupBackgroundBrush}"/>
                 <Setter Property="Foreground"
-                        Value="{StaticResource CalendarForegroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupForegroundBrush}"/>
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource DatePickerPopupBorderBrush}"/>
+                <Setter Property="BorderThickness"
+                        Value="0"/>
         </Style>
 
         <Style TargetType="{x:Type CalendarDayButton}">
                 <Setter Property="Background"
-                        Value="{StaticResource CalendarBackgroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupBackgroundBrush}"/>
                 <Setter Property="Foreground"
-                        Value="{StaticResource CalendarForegroundBrush}"/>
+                        Value="{StaticResource DatePickerPopupForegroundBrush}"/>
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource DatePickerPopupBackgroundBrush}"/>
+                <Setter Property="BorderThickness"
+                        Value="1"/>
         </Style>
 
+        <!-- CheckBox / RadioButton -->
         <Style TargetType="CheckBox">
                 <Setter Property="Foreground"
                         Value="{StaticResource TextBrushPrimary}"/>
@@ -440,18 +475,6 @@
                         Value="{StaticResource TextBrushPrimary}"/>
                 <Setter Property="Padding"
                         Value="8,4"/>
-                <Style.Triggers>
-                        <Trigger Property="IsHighlighted"
-                                 Value="True">
-                                <Setter Property="Foreground"
-                                        Value="#0F1722"/>
-                        </Trigger>
-                        <Trigger Property="IsSubmenuOpen"
-                                 Value="True">
-                                <Setter Property="Foreground"
-                                        Value="#0F1722"/>
-                        </Trigger>
-                </Style.Triggers>
         </Style>
 
         <Style TargetType="Separator">
