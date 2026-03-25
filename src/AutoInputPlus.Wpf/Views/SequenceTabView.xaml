@@ -89,10 +89,10 @@
                             <DataGridCheckBoxColumn Header="Hold"
                                                     Width="70"/>
 
-                            <DataGridTextColumn Header="Duration"
+                            <DataGridTextColumn Header="Hold Duration"
                                                 Width="120"/>
 
-                            <DataGridTextColumn Header="Delay"
+                            <DataGridTextColumn Header="Delay After"
                                                 Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>

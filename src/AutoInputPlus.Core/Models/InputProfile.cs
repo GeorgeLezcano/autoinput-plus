@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using AutoInputPlus.Core.Constants;
 using AutoInputPlus.Core.Enums;
 
@@ -17,6 +18,7 @@ public sealed class InputProfile
     /// This value is used internally to distinguish profiles,
     /// even when multiple profiles share the same display name.
     /// </summary>
+    [JsonIgnore]
     public Guid ProfileId { get; set; } = Guid.NewGuid();
 
     /// <summary>

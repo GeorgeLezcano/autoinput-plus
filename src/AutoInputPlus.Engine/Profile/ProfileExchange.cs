@@ -1,55 +1,89 @@
-using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 
 namespace AutoInputPlus.Engine.Profile;
 
 /// <summary>
-/// AutoInput implementation profile exchanges. 
+/// AutoInput implementation profile exchanges.
 /// Handles imports, exports as well as generated
-/// string validation. 
+/// string validation.
 /// </summary>
 public sealed class ProfileExchange : IProfileExchange
 {
-    private readonly JsonSerializerOptions serializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
     {
-        ReferenceHandler = ReferenceHandler.Preserve
-        //TODO Probably ignore GUID ProfileId from InputProfile since its local.
+        WriteIndented = false
     };
 
     /// <inheritdoc/>
-    public async Task<string> ExportProfileAsync(InputProfile profile)
+    public Task<string> ExportProfileAsync(InputProfile profile)
     {
-        string jsonString = JsonSerializer.Serialize(profile, serializerOptions);
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
+        ArgumentNullException.ThrowIfNull(profile);
+
+        string jsonString = JsonSerializer.Serialize(profile, SerializerOptions);
+        string encodedProfile = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
+
+        return Task.FromResult(encodedProfile);
     }
 
     /// <inheritdoc/>
-    public async Task<InputProfile> ImportProfileAsync(string encodedProfile)
+    public Task<InputProfile> ImportProfileAsync(string encodedProfile)
     {
-        if (!IsValidProfileString(encodedProfile))
+        ArgumentException.ThrowIfNullOrWhiteSpace(encodedProfile);
+
+        if (!TryDecodeAndDeserializeProfile(encodedProfile, out InputProfile? profile))
         {
-            throw new InvalidEnumArgumentException("Invalid profile string.");
+            throw new InvalidOperationException("The provided profile string is invalid.");
         }
 
-        byte[] jsonBytes = Convert.FromBase64String(encodedProfile);
-        string jsonString = Encoding.UTF8.GetString(jsonBytes);
-
-        // TODO Do I save it here? maybe...since there is no "save" button in the app, its autosaves.
-
-        return JsonSerializer.Deserialize<InputProfile>(jsonString, serializerOptions)!; //TODO Does this populate ProfileId?
+        return Task.FromResult(profile)!;
     }
 
     /// <inheritdoc/>
     public bool IsValidProfileString(string encodedProfile)
     {
-        if (string.IsNullOrWhiteSpace(encodedProfile)) return false;
+        if (string.IsNullOrWhiteSpace(encodedProfile))
+        {
+            return false;
+        }
 
-        //TODO More validation? Maybe max/min length, or control characters?
+        return TryDecodeAndDeserializeProfile(encodedProfile, out _);
+    }
 
-        return true;
+    private static bool TryDecodeAndDeserializeProfile(
+        string encodedProfile,
+        out InputProfile? profile)
+    {
+        profile = null;
+
+        try
+        {
+            byte[] jsonBytes = Convert.FromBase64String(encodedProfile);
+            string jsonString = Encoding.UTF8.GetString(jsonBytes);
+
+            profile = JsonSerializer.Deserialize<InputProfile>(jsonString, SerializerOptions);
+
+            if (profile is null)
+            {
+                return false;
+            }
+
+            profile.ProfileId = Guid.NewGuid();
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+        catch (NotSupportedException)
+        {
+            return false;
+        }
     }
 }

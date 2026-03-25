@@ -13,8 +13,11 @@ public interface ISequenceRunner
     /// <param name="sequence">
     /// The sequence to execute.
     /// </param>
+    /// <param name="cancellationToken">
+    /// A token that can be used to cancel sequence execution.
+    /// </param>
     /// <returns>
     /// A task that represents the asynchronous execution operation.
     /// </returns>
-    Task ExecuteAsync(Sequence sequence);
+    Task ExecuteAsync(Sequence sequence, CancellationToken cancellationToken);
 }

@@ -30,7 +30,7 @@ public static class AppConstants
     /// <summary>
     /// Default stop input count when count-based execution is enabled.
     /// </summary>
-    public const int DefaultStopInputCount = 0;
+    public const int DefaultStopInputCount = 100;
 
     /// <summary>
     /// Default keyboard hotkey used to start or stop execution.

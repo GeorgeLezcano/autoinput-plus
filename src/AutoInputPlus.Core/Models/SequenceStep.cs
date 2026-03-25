@@ -15,59 +15,42 @@ public sealed class SequenceStep
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the type of action performed by the step.
+    /// Gets or sets the selected target input type for the step.
     /// </summary>
-    public SequenceStepActionType ActionType { get; set; } = SequenceStepActionType.KeyPress;
+    public SequenceStepTargetType TargetType { get; set; } = SequenceStepTargetType.Keyboard;
 
     /// <summary>
-    /// Gets or sets the keyboard key used by keyboard actions.
+    /// Gets or sets the keyboard key used when <see cref="TargetType"/> is <see cref="SequenceStepTargetType.Keyboard"/>.
     /// </summary>
-    /// <remarks>
-    /// Used for <see cref="SequenceStepActionType.KeyPress"/>,
-    /// <see cref="SequenceStepActionType.KeyDown"/>, and
-    /// <see cref="SequenceStepActionType.KeyUp"/>.
-    /// </remarks>
     public InputKey? Key { get; set; }
 
     /// <summary>
-    /// Gets or sets the mouse button used by mouse button actions.
+    /// Gets or sets the mouse button used when <see cref="TargetType"/> is <see cref="SequenceStepTargetType.MouseButton"/>.
     /// </summary>
-    /// <remarks>
-    /// Used for <see cref="SequenceStepActionType.MouseClick"/>,
-    /// <see cref="SequenceStepActionType.MouseDown"/>, and
-    /// <see cref="SequenceStepActionType.MouseUp"/>.
-    /// </remarks>
     public MouseButton? MouseButton { get; set; }
 
     /// <summary>
-    /// Gets or sets the mouse wheel delta used by wheel actions.
+    /// Gets or sets the mouse wheel delta used when <see cref="TargetType"/> is <see cref="SequenceStepTargetType.MouseWheel"/>.
     /// Positive values scroll up and negative values scroll down.
     /// </summary>
-    /// <remarks>
-    /// Used for <see cref="SequenceStepActionType.MouseWheel"/>.
-    /// </remarks>
     public int MouseWheelDelta { get; set; }
 
     /// <summary>
-    /// Gets or sets the delay in milliseconds before executing the step.
+    /// Gets or sets a value indicating whether the target input should be held
+    /// for the configured duration instead of performing a single press or click.
     /// </summary>
-    public int DelayBeforeMilliseconds { get; set; }
+    public bool IsHold { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration in milliseconds for hold actions.
+    /// This value is ignored when <see cref="IsHold"/> is false.
+    /// </summary>
+    public int DurationMilliseconds { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds after executing the step.
     /// </summary>
     public int DelayAfterMilliseconds { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the step remains held
-    /// during the post-action delay when that behavior is applicable.
-    /// </summary>
-    /// <remarks>
-    /// This value is mainly meaningful for press-and-hold style actions such as
-    /// <see cref="SequenceStepActionType.KeyDown"/> and
-    /// <see cref="SequenceStepActionType.MouseDown"/>.
-    /// </remarks>
-    public bool HoldDuringDelay { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the step is enabled.

@@ -1,4 +1,5 @@
 using AutoInputPlus.Core.Constants;
+using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 
@@ -10,7 +11,7 @@ namespace AutoInputPlus.Engine.Profile;
 public sealed class ProfileManager : IProfileManager
 {
     /// <inheritdoc/>
-    public InputProfile ActiveProfile { get; private set; } = DefaultProfile;
+    public InputProfile ActiveProfile { get; private set; } = CreateDefaultProfile();
 
     /// <inheritdoc/>
     public void SetActiveProfile(InputProfile profile)
@@ -20,27 +21,30 @@ public sealed class ProfileManager : IProfileManager
     }
 
     /// <summary>
-    /// Resets all the profile data to its default values.
+    /// Creates a default application profile.
     /// </summary>
-    public void ResetProfileToDefaultValues() => SetActiveProfile(DefaultProfile);
-
-    /// <summary>
-    /// Retrieves a default application profile.
-    /// This operation is read-only.
-    /// </summary>
-    private static InputProfile DefaultProfile => new()
+    /// <returns>
+    /// A new <see cref="InputProfile"/> initialized with application defaults.
+    /// </returns>
+    public static InputProfile CreateDefaultProfile()
     {
-        IntervalMilliseconds = AppConstants.DefaultIntervalMilliseconds,
-        RunUntilStopActive = true,
-        RunUntilSetCountActive = false,
-        StopInputCount = AppConstants.DefaultStopInputCount,
-        StartStopHotkey = AppConstants.DefaultStartStopHotkey,
-        TargetInputBinding = AppConstants.DefaultTargetInputBinding,
-        ScheduleStartEnabled = false,
-        ScheduleStartTime = DateTime.Now,
-        ScheduleStopEnabled = false,
-        ScheduleStopTime = DateTime.Now,
-        SequenceModeActive = false,
-        HoldTargetEnabled = false
-    };
+        return new InputProfile
+        {
+            Name = AppConstants.DefaultInputProfileName,
+            IntervalMilliseconds = AppConstants.DefaultIntervalMilliseconds,
+            RunUntilStopActive = true,
+            RunUntilSetCountActive = false,
+            StopInputCount = AppConstants.DefaultStopInputCount,
+            HoldTargetEnabled = false,
+            StartStopHotkey = new Hotkey(InputKey.F8), // TODO Move to constants
+            TargetInputBinding = InputBinding.FromMouseButton(MouseButton.Left), //TODO Move to constants
+            ScheduleStartEnabled = false,
+            ScheduleStartTime = DateTime.Now,
+            ScheduleStopEnabled = false,
+            ScheduleStopTime = DateTime.Now,
+            SelectedSequenceIndex = 0,
+            SequenceModeActive = false,
+            Sequences = []
+        };
+    }
 }
