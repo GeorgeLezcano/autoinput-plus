@@ -106,7 +106,7 @@
                 </MenuItem>
 
                 <MenuItem x:Name="DarkBlueThemeMenuItem"
-                          Header="_Dark Blue"
+                          Header="_Dark Blue (Unfinished)"
                           IsCheckable="True"
                           Click="DarkBlueThemeMenuItem_Click">
                     <MenuItem.Style>
