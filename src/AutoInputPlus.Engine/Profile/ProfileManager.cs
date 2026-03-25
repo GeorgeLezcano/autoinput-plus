@@ -21,8 +21,6 @@ public sealed class ProfileManager : IProfileManager
 
     /// <summary>
     /// Resets all the profile data to its default values.
-    /// NOTE: This method does not persist unsaved profiles
-    /// nor delete existing ones.
     /// </summary>
     public void ResetProfileToDefaultValues() => SetActiveProfile(DefaultProfile);
 

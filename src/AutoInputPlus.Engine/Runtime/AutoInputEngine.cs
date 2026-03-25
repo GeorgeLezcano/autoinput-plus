@@ -38,19 +38,9 @@ public sealed class AutoInputEngine : IEngine
     /// <inheritdoc/>
     public async Task StartAsync()
     {
-        if (State == EngineState.Disabled) // TODO Consider just return instead, so it ignores it if its disabled. Same as "Running"
-        {
-            throw new InvalidOperationException("The engine is disabled and cannot start execution.");
-        }
-
-        if (State == EngineState.Running)
-        {
-            return;
-        }
-
         if (State != EngineState.Ready)
         {
-            throw new InvalidOperationException($"The engine cannot start execution while in state '{State}'.");
+            return;
         }
 
         // TODO start key/mouse input logic.

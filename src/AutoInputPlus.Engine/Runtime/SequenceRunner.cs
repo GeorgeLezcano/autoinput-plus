@@ -17,8 +17,10 @@ public sealed class SequenceRunner(IProfileManager profileManager) : ISequenceRu
         ArgumentNullException.ThrowIfNull(sequence);
 
         if (!_profileManager.ActiveProfile.SequenceModeActive)
+        {
             return;
-
+        }
+            
         // TODO Sequence execution logic. It should only execute if sequence mode is
         // currently active.
 

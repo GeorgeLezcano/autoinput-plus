@@ -1,3 +1,7 @@
+using System.ComponentModel;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 
@@ -10,28 +14,42 @@ namespace AutoInputPlus.Engine.Profile;
 /// </summary>
 public sealed class ProfileExchange : IProfileExchange
 {
-    /// <inheritdoc/>
-    public Task<string> ExportProfileAsync(InputProfile profile)
+    private readonly JsonSerializerOptions serializerOptions = new()
     {
-        //TODO Export logic, encode the data into a single string.
+        ReferenceHandler = ReferenceHandler.Preserve
+        //TODO Probably ignore GUID ProfileId from InputProfile since its local.
+    };
 
-        throw new NotImplementedException();
+    /// <inheritdoc/>
+    public async Task<string> ExportProfileAsync(InputProfile profile)
+    {
+        string jsonString = JsonSerializer.Serialize(profile, serializerOptions);
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
     }
 
     /// <inheritdoc/>
-    public Task<InputProfile> ImportProfileAsync(string encodedProfile)
+    public async Task<InputProfile> ImportProfileAsync(string encodedProfile)
     {
-        // TODO Decode the provided string, validate it with IsValidProfileString then load it
-        // or potentially save it too.
+        if (!IsValidProfileString(encodedProfile))
+        {
+            throw new InvalidEnumArgumentException("Invalid profile string.");
+        }
 
-        throw new NotImplementedException();
+        byte[] jsonBytes = Convert.FromBase64String(encodedProfile);
+        string jsonString = Encoding.UTF8.GetString(jsonBytes);
+
+        // TODO Do I save it here? maybe...since there is no "save" button in the app, its autosaves.
+
+        return JsonSerializer.Deserialize<InputProfile>(jsonString, serializerOptions)!; //TODO Does this populate ProfileId?
     }
 
     /// <inheritdoc/>
     public bool IsValidProfileString(string encodedProfile)
     {
-        // TODO Validation logic, figure out encoding/decoding logic to use.
-        // Research for existing libraries, or maybe make a custom encoder. 
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(encodedProfile)) return false;
+
+        //TODO More validation? Maybe max/min length, or control characters?
+
+        return true;
     }
 }
