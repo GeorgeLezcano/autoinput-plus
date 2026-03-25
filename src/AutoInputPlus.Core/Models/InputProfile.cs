@@ -18,7 +18,6 @@ public sealed class InputProfile
     /// This value is used internally to distinguish profiles,
     /// even when multiple profiles share the same display name.
     /// </summary>
-    [JsonIgnore]
     public Guid ProfileId { get; set; } = Guid.NewGuid();
 
     /// <summary>

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using AutoInputPlus.Core.Enums;
 
 namespace AutoInputPlus.Core.Models;
 
@@ -11,11 +12,6 @@ namespace AutoInputPlus.Core.Models;
 public sealed class AppConfiguration
 {
     /// <summary>
-    /// Gets or sets the default folder path used to store application data.
-    /// </summary>
-    public string DataFolderPath { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the unique identifier of the last active profile.
     /// </summary>
     public Guid? LastActiveProfileId { get; set; }
@@ -23,5 +19,15 @@ public sealed class AppConfiguration
     /// <summary>
     /// Flag that indicates if the application should run when Operating System starts.
     /// </summary>
-    public bool RunOnSystemStartup { get; set; } //TODO Stored in a registry key? Maybe this is not needed, but instead the UI modifies the registry? more research on this...
+    public bool RunOnSystemStartup { get; set; }
+
+    /// <summary>
+    /// Selected application theme.
+    /// </summary>
+    public AppTheme AppTheme { get; set; }
+
+    /// <summary>
+    /// Flag to indicate if the engine should be enabled.
+    /// </summary>
+    public bool EngineEnabled { get; set; }
 }

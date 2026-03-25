@@ -15,6 +15,7 @@ public sealed class ProfileExchange : IProfileExchange
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = false
+        //TODO Potentially a way to exclude ProfileId property from here? explore other options
     };
 
     /// <inheritdoc/>
