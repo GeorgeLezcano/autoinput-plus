@@ -32,7 +32,7 @@ public sealed class TrayIconManager : IDisposable
         {
             Icon = LoadTrayIcon() ?? SystemIcons.Application,
             Visible = true,
-            Text = $"AutoInput Plus\n{GetEngineStatusText()}",
+            Text = $"AutoInput Plus",
             ContextMenuStrip = BuildContextMenu()
         };
 

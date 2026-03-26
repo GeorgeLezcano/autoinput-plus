@@ -45,16 +45,19 @@
                         <Button Content="New"
                                 Height="32"
                                 Margin="0,0,0,6"
-                                HorizontalContentAlignment="Center"/>
+                                HorizontalContentAlignment="Center" 
+                                Click="NewSequenceButton_Click"/>
 
                         <Button Content="Rename"
                                 Height="32"
                                 Margin="0,0,0,6"
-                                HorizontalContentAlignment="Center"/>
+                                HorizontalContentAlignment="Center" 
+                                Click="RenameSequenceButton_Click"/>
 
                         <Button Content="Delete"
                                 Height="32"
-                                HorizontalContentAlignment="Center"/>
+                                HorizontalContentAlignment="Center" 
+                                Click="DeleteSequenceButton_Click"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -102,10 +105,12 @@
                         <Button Content="Add"
                                 Width="80"
                                 Height="32"
-                                Margin="0,0,8,0"/>
+                                Margin="0,0,8,0"
+                                Click="AddStepButton_Click"/>
                         <Button Content="Remove"
                                 Width="80"
-                                Height="32"/>
+                                Height="32"
+                                Click="RemoveStepButton_Click"/>
                     </StackPanel>
                 </Grid>
             </Border>

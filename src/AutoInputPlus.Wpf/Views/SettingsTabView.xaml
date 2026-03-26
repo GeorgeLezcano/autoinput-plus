@@ -54,10 +54,12 @@
                                              GroupName="ExecutionMode"
                                              Content="Single Input"
                                              IsChecked="True"
-                                             Margin="0,0,20,0"/>
+                                             Margin="0,0,20,0" 
+                                             Checked="SingleInputModeRadioButton_Checked"/>
                                 <RadioButton x:Name="SequenceModeRadioButton"
                                              GroupName="ExecutionMode"
-                                             Content="Sequence Mode"/>
+                                             Content="Sequence Mode" 
+                                             Checked="SequenceModeRadioButton_Checked"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -90,7 +92,8 @@
                                             Height="34"
                                             Width="120"
                                             Content="F8"
-                                            HorizontalContentAlignment="Center"/>
+                                            HorizontalContentAlignment="Center" 
+                                            Click="CaptureHotkeyButton_Click"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2">
@@ -100,7 +103,8 @@
                                             Height="34"
                                             Width="120"
                                             Content="Left Click"
-                                            HorizontalContentAlignment="Center"/>
+                                            HorizontalContentAlignment="Center" 
+                                            Click="CaptureTargetKeyButton_Click"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -140,11 +144,14 @@
                                                  Width="120"
                                                  Text="100"
                                                  TextAlignment="Center"
-                                                 VerticalContentAlignment="Center"/>
+                                                 VerticalContentAlignment="Center" 
+                                                 TextChanged="IntervalTextBox_TextChanged"/>
                                     </StackPanel>
 
                                     <CheckBox Grid.Row="4"
-                                              x:Name="HoldCheckBox">
+                                              x:Name="HoldCheckBox" 
+                                              Checked="HoldCheckBox_Checked"
+                                              Unchecked="HoldCheckBox_Unchecked">
                                         <TextBlock Text="Hold target instead of repeating input"
                                                    TextWrapping="Wrap"/>
                                     </CheckBox>
@@ -173,12 +180,14 @@
                                                  x:Name="RunUntilStopRadioButton"
                                                  GroupName="RunMode"
                                                  Content="Run until manually stopped"
-                                                 IsChecked="True"/>
+                                                 IsChecked="True" 
+                                                 Checked="RunUntilStopRadioButton_Checked"/>
 
                                     <RadioButton Grid.Row="4"
                                                  x:Name="RunForSetCountRadioButton"
                                                  GroupName="RunMode"
-                                                 Content="Run for set count"/>
+                                                 Content="Run for set count" 
+                                                 Checked="RunForSetCountRadioButton_Checked"/>
 
                                     <StackPanel Grid.Row="6"
                                                 Margin="18,0,0,0">
@@ -189,7 +198,8 @@
                                                  Width="120"
                                                  Text="100"
                                                  TextAlignment="Center"
-                                                 VerticalContentAlignment="Center"/>
+                                                 VerticalContentAlignment="Center" 
+                                                 TextChanged="RunCountTextBox_TextChanged"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -223,7 +233,9 @@
                         <StackPanel Grid.Column="0">
                             <CheckBox x:Name="ScheduleStartEnabledCheckBox"
                                       Content="Use scheduled start"
-                                      Margin="0,0,0,8"/>
+                                      Margin="0,0,0,8" 
+                                      Checked="ScheduleStartEnabledCheckBox_Checked"
+                                      Unchecked="ScheduleStartEnabledCheckBox_Unchecked"/>
                             <TextBlock Text="Start Date / Time"
                                        Margin="0,0,0,6"/>
 
@@ -281,7 +293,9 @@
                         <StackPanel Grid.Column="2">
                             <CheckBox x:Name="ScheduleStopEnabledCheckBox"
                                       Content="Use scheduled stop"
-                                      Margin="0,0,0,8"/>
+                                      Margin="0,0,0,8" 
+                                      Checked="ScheduleStopEnabledCheckBox_Checked"
+                                      Unchecked="ScheduleStopEnabledCheckBox_Uchecked"/>
                             <TextBlock Text="Stop Date / Time"
                                        Margin="0,0,0,6"/>
 

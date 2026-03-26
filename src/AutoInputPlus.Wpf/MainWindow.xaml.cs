@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
@@ -169,6 +170,39 @@ public partial class MainWindow : Window
 
         await _engine.DisableAsync();
         RefreshEngineUi();
+    }
+
+    private void ProfilesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // TODO Save the current profile state and load the selected profile index in profile manager
+    }
+
+    private void NewProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        // TODO Save the current profile state and creates a new profile with default values
+        // potentially use the rename button to create it with a custom name (fallback to default if empty).
+        // Names should contain (1) or (2) etc, based on the amount of repeated profile names
+
+        // TODO Potentially later a duplicate profile button? Even though technically that can be
+        // achieved now by exporting then importing again. It will be basically a duplicate
+
+        System.Windows.MessageBox.Show($"Feature '{nameof(NewProfileButton_Click)}' not implemented");
+    }
+
+    private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        // TODO Rename the currently loaded profile
+        // Names should contain (1) or (2) etc, based on the amount of repeated profile names
+
+        System.Windows.MessageBox.Show($"Feature '{nameof(RenameProfileButton_Click)}' not implemented");
+    }
+
+    private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
+    {
+        // TODO Removes the profile from the list and persistence. This is irreversible.
+        // If there is no profile left, make sure to have a default one created. 
+
+        System.Windows.MessageBox.Show($"Feature '{nameof(DeleteProfileButton_Click)}' not implemented");
     }
 
     #endregion
