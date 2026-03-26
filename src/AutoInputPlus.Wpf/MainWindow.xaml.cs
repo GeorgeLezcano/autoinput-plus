@@ -1,13 +1,17 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
+using AutoInputPlus.Core.Models;
 using AutoInputPlus.Wpf.Services;
+using AutoInputPlus.Wpf.Views.Dialogs;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
+using MessageBox = System.Windows.MessageBox;
 
 namespace AutoInputPlus.Wpf;
 
@@ -19,17 +23,27 @@ public partial class MainWindow : Window
     private bool _allowClose;
     private bool _isUpdatingEngineUi;
     private readonly IEngine _engine;
+    private readonly IProfileExchange _profileExchange;
+    private readonly IProfileManager _profileManager;
+    private readonly IInputProfileStore _inputProfileStore;
 
     /// <summary>
     /// Initializes the main window.
     /// </summary>
-    public MainWindow(IEngine engine)
+    public MainWindow(
+        IEngine engine,
+        IProfileExchange profileExchange,
+        IProfileManager profileManager,
+        IInputProfileStore inputProfileStore)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
         InitializeComponent();
 
         _engine = engine;
+        _profileExchange = profileExchange;
+        _profileManager = profileManager;
+        _inputProfileStore = inputProfileStore;
 
         Loaded += MainWindow_Loaded;
         Closed += MainWindow_Closed;
@@ -113,14 +127,28 @@ public partial class MainWindow : Window
         });
     }
 
-    private void ExportProfile_Click(object sender, RoutedEventArgs e)
+    private async void ExportProfile_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Export logic
+        InputProfile activeProfile = _profileManager.ActiveProfile;
+        string exportedProfile = await _profileExchange.ExportProfileAsync(activeProfile);
+
+        var dialog = new ExportProfileWindow(exportedProfile)
+        {
+            Owner = this
+        };
+
+        dialog.ShowDialog();
     }
+
 
     private void ImportProfile_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Import logic
+        var dialog = new ImportProfileWindow(_profileExchange)
+        {
+            Owner = this
+        };
+
+        dialog.ShowDialog();
     }
 
     private async void EngineEnabledCheckBox_Checked(object sender, RoutedEventArgs e)

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
-using AutoInputPlus.Infrastructure.Serialization;
+using AutoInputPlus.Core.Serialization;
 
 namespace AutoInputPlus.Infrastructure.Persistence;
 

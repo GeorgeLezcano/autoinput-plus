@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Models;
 
-namespace AutoInputPlus.Infrastructure.Serialization;
+namespace AutoInputPlus.Core.Serialization;
 
 /// <summary>
 /// JSON converter for <see cref="InputBinding"/>.
