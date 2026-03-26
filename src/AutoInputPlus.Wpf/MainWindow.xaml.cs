@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using AutoInputPlus.Core.Enums;
@@ -11,7 +10,6 @@ using AutoInputPlus.Wpf.Services;
 using AutoInputPlus.Wpf.Views.Dialogs;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
-using MessageBox = System.Windows.MessageBox;
 
 namespace AutoInputPlus.Wpf;
 

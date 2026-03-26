@@ -81,9 +81,9 @@ public sealed class InputProfileStore : IInputProfileStore
             throw new FileNotFoundException($"Profile '{profileId}' not found.", filePath);
         }
 
-        InputProfile? profile = await TryLoadProfileFromFileAsync(filePath) 
+        InputProfile? profile = await TryLoadProfileFromFileAsync(filePath)
             ?? throw new InvalidOperationException($"Profile '{profileId}' could not be loaded.");
-            
+
         return profile;
     }
 

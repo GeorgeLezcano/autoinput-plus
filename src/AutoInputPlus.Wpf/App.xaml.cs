@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Windows;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
