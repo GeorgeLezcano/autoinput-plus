@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Windows;
 using AutoInputPlus.Core.Enums;
+using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Engine;
 using AutoInputPlus.Infrastructure;
 using AutoInputPlus.Input.Windows;
@@ -25,6 +27,7 @@ public partial class App : Application
     private bool _ownsMutex;
     private ServiceProvider? _serviceProvider;
     private TrayIconManager? _trayIconManager;
+    private IEngine? _engine;
 
     /// <summary>
     /// Handles application startup.
@@ -32,7 +35,7 @@ public partial class App : Application
     /// <param name="e">
     /// Startup event data.
     /// </param>
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         _singleInstanceMutex = new Mutex(
             initiallyOwned: true,
@@ -50,7 +53,6 @@ public partial class App : Application
         base.OnStartup(e);
 
         var services = new ServiceCollection();
-
         ConfigureServices(services);
 
         _serviceProvider = services.BuildServiceProvider();
@@ -58,6 +60,11 @@ public partial class App : Application
         _trayIconManager = _serviceProvider.GetRequiredService<TrayIconManager>();
 
         ThemeManager.ApplyTheme(AppTheme.LightBlue);
+
+        // TODO Engine enabled/disabled logic from registry.
+        // Engine will always start enabled as of now for testing.
+        _engine = _serviceProvider.GetRequiredService<IEngine>();
+        await _engine.EnableAsync();
     }
 
     /// <summary>

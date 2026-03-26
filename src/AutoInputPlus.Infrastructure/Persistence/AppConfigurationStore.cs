@@ -74,6 +74,6 @@ public sealed class AppConfigurationStore : IAppConfigurationStore
         }
 
         string appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        return Path.Combine(appDataDirectory, "AutoInputPlus"); //TODO Move to constants
+        return Path.Combine(appDataDirectory, "AutoInputPlus");
     }
 }

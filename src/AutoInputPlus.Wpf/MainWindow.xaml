@@ -18,7 +18,8 @@
               BorderThickness="0,0,0,1">
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="Import Profile...">
+                <MenuItem Header="Import Profile."
+                          Click="ImportProfile_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Background"
@@ -38,7 +39,8 @@
                     </MenuItem.Style>
                 </MenuItem>
 
-                <MenuItem Header="Export Profile...">
+                <MenuItem Header="Export Profile."
+                          Click="ExportProfile_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Background"
@@ -60,7 +62,8 @@
 
                 <Separator/>
 
-                <MenuItem Header="Open Data Folder">
+                <MenuItem Header="Open Data Folder"
+                          Click="OpenDataFolderMenuItem_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Background"
@@ -162,7 +165,9 @@
 
                         <CheckBox x:Name="EngineEnabledCheckBox"
                                   Grid.Column="2"
-                                  VerticalAlignment="Center">
+                                  VerticalAlignment="Center"
+                                  Checked="EngineEnabledCheckBox_Checked"
+                                  Unchecked="EngineEnabledCheckBox_Unchecked">
                             <TextBlock Text="Enabled"
                                        FontWeight="SemiBold"/>
                         </CheckBox>
@@ -174,12 +179,14 @@
                                        VerticalAlignment="Center"
                                        Margin="0,0,8,0"
                                        Foreground="{DynamicResource TextBrushSecondary}"/>
-                            <Border CornerRadius="12"
+
+                            <Border x:Name="EngineStatusBadge"
+                                    CornerRadius="12"
                                     Background="{DynamicResource StatusNeutralBrush}"
                                     Padding="10,4"
                                     VerticalAlignment="Center">
                                 <TextBlock x:Name="EngineStatusTextBlock"
-                                           Text="Disabled"
+                                           Text="Unavailable"
                                            FontSize="14"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource StatusNeutralTextBrush}"/>
