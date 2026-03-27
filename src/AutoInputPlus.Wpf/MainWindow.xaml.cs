@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
@@ -21,10 +23,18 @@ public partial class MainWindow : Window
 {
     private bool _allowClose;
     private bool _isUpdatingEngineUi;
+    private bool _isUpdatingStartupUi;
+    private bool _isUpdatingProfilesUi;
+    private HwndSource? _windowSource;
     private readonly IEngine _engine;
     private readonly IProfileExchange _profileExchange;
     private readonly IProfileManager _profileManager;
     private readonly IInputProfileStore _inputProfileStore;
+    private readonly IAppConfigurationStore _appConfigurationStore;
+    private readonly IStartupRegistrationService _startupRegistrationService;
+    private readonly IGlobalHotkey _globalHotkey;
+
+    private AppConfiguration _appConfiguration = new();
 
     /// <summary>
     /// Initializes the main window.
@@ -33,7 +43,10 @@ public partial class MainWindow : Window
         IEngine engine,
         IProfileExchange profileExchange,
         IProfileManager profileManager,
-        IInputProfileStore inputProfileStore)
+        IInputProfileStore inputProfileStore,
+        IAppConfigurationStore appConfigurationStore,
+        IStartupRegistrationService startupRegistrationService,
+        IGlobalHotkey globalHotkey)
     {
         ArgumentNullException.ThrowIfNull(engine);
 
@@ -43,9 +56,13 @@ public partial class MainWindow : Window
         _profileExchange = profileExchange;
         _profileManager = profileManager;
         _inputProfileStore = inputProfileStore;
+        _appConfigurationStore = appConfigurationStore;
+        _startupRegistrationService = startupRegistrationService;
+        _globalHotkey = globalHotkey;
 
         Loaded += MainWindow_Loaded;
         Closed += MainWindow_Closed;
+        SourceInitialized += MainWindow_SourceInitialized;
     }
 
     #region Tabs
@@ -81,16 +98,46 @@ public partial class MainWindow : Window
 
     #region Lifecycle
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
+
+        _appConfiguration = await _appConfigurationStore.LoadConfigurationAsync();
+
+        SettingsTabViewContent.SetContext(_profileManager, _inputProfileStore);
+
         UpdateThemeMenuChecks(ThemeManager.CurrentTheme);
         RefreshEngineUi();
+        LoadStartupRegistrationUi();
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
+    }
+
+    private void MainWindow_SourceInitialized(object? sender, EventArgs e)
+    {
+        _windowSource = PresentationSource.FromVisual(this) as HwndSource;
+
+        if (_windowSource is null)
+        {
+            return;
+        }
+
+        _windowSource.AddHook(WndProc);
+        _globalHotkey.Initialize(_windowSource.Handle);
+        _globalHotkey.HotkeyPressed += GlobalHotkey_HotkeyPressed;
+        RegisterActiveProfileHotkey();
     }
 
     private void MainWindow_Closed(object? sender, EventArgs e)
     {
         ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+        _globalHotkey.HotkeyPressed -= GlobalHotkey_HotkeyPressed;
+
+        if (_windowSource is not null)
+        {
+            _windowSource.RemoveHook(WndProc);
+            _windowSource = null;
+        }
     }
 
     #endregion
@@ -112,7 +159,6 @@ public partial class MainWindow : Window
         string appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         appDataDirectory = Path.Combine(appDataDirectory, "AutoInputPlus");
 
-        // TODO This should already exist at first startup. Rethink this part and where it goes...
         if (!Directory.Exists(appDataDirectory))
         {
             Directory.CreateDirectory(appDataDirectory);
@@ -139,15 +185,28 @@ public partial class MainWindow : Window
         dialog.ShowDialog();
     }
 
-
-    private void ImportProfile_Click(object sender, RoutedEventArgs e)
+    private async void ImportProfile_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new ImportProfileWindow(_profileExchange)
         {
             Owner = this
         };
 
-        dialog.ShowDialog();
+        bool? dialogResult = dialog.ShowDialog();
+
+        if (dialogResult != true)
+        {
+            return;
+        }
+
+        InputProfile importedProfile = await _profileExchange.ImportProfileAsync(dialog.EncodedProfile);
+        await _inputProfileStore.SaveProfileAsync(importedProfile);
+
+        _profileManager.SetActiveProfile(importedProfile);
+        await SaveLastActiveProfileAsync(importedProfile);
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
+        RegisterActiveProfileHotkey();
     }
 
     private async void EngineEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -158,6 +217,8 @@ public partial class MainWindow : Window
         }
 
         await _engine.EnableAsync();
+        _appConfiguration.EngineEnabled = true;
+        await _appConfigurationStore.SaveConfigurationAsync(_appConfiguration);
         RefreshEngineUi();
     }
 
@@ -169,39 +230,56 @@ public partial class MainWindow : Window
         }
 
         await _engine.DisableAsync();
+        _appConfiguration.EngineEnabled = false;
+        await _appConfigurationStore.SaveConfigurationAsync(_appConfiguration);
         RefreshEngineUi();
     }
 
-    private void ProfilesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void RunOnStartupCheckBox_Checked(object sender, RoutedEventArgs e)
     {
-        // TODO Save the current profile state and load the selected profile index in profile manager
+        if (_isUpdatingStartupUi)
+        {
+            return;
+        }
+
+        _startupRegistrationService.SetEnabled(true);
+    }
+
+    private void RunOnStartupCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    {
+        if (_isUpdatingStartupUi)
+        {
+            return;
+        }
+
+        _startupRegistrationService.SetEnabled(false);
+    }
+
+    private async void ProfilesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingProfilesUi || ProfilesComboBox.SelectedItem is not InputProfile selectedProfile)
+        {
+            return;
+        }
+
+        _profileManager.SetActiveProfile(selectedProfile);
+        await SaveLastActiveProfileAsync(selectedProfile);
+        LoadSettingsTabFromActiveProfile();
+        RegisterActiveProfileHotkey();
     }
 
     private void NewProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Save the current profile state and creates a new profile with default values
-        // potentially use the rename button to create it with a custom name (fallback to default if empty).
-        // Names should contain (1) or (2) etc, based on the amount of repeated profile names
-
-        // TODO Potentially later a duplicate profile button? Even though technically that can be
-        // achieved now by exporting then importing again. It will be basically a duplicate
-
         System.Windows.MessageBox.Show($"Feature '{nameof(NewProfileButton_Click)}' not implemented");
     }
 
     private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Rename the currently loaded profile
-        // Names should contain (1) or (2) etc, based on the amount of repeated profile names
-
         System.Windows.MessageBox.Show($"Feature '{nameof(RenameProfileButton_Click)}' not implemented");
     }
 
     private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Removes the profile from the list and persistence. This is irreversible.
-        // If there is no profile left, make sure to have a default one created. 
-
         System.Windows.MessageBox.Show($"Feature '{nameof(DeleteProfileButton_Click)}' not implemented");
     }
 
@@ -209,18 +287,15 @@ public partial class MainWindow : Window
 
     #region Helpers
 
-    private void ThemeManager_ThemeChanged(AppTheme appTheme)
+    private async void ThemeManager_ThemeChanged(AppTheme appTheme)
     {
         UpdateThemeMenuChecks(appTheme);
+        _appConfiguration.AppTheme = appTheme;
+        await _appConfigurationStore.SaveConfigurationAsync(_appConfiguration);
     }
 
     private void UpdateThemeMenuChecks(AppTheme appTheme)
     {
-        if (LightBlueThemeMenuItem is null || DarkBlueThemeMenuItem is null)
-        {
-            return;
-        }
-
         LightBlueThemeMenuItem.IsChecked = appTheme == AppTheme.LightBlue;
         DarkBlueThemeMenuItem.IsChecked = appTheme == AppTheme.DarkBlue;
     }
@@ -237,7 +312,7 @@ public partial class MainWindow : Window
             Brush badgeBackground;
             Brush badgeForeground;
 
-            switch (_engine.State) //TODO Consider moving this colors somplece else...
+            switch (_engine.State)
             {
                 case EngineState.Disabled:
                     badgeBackground = new SolidColorBrush(Color.FromRgb(229, 231, 235));
@@ -277,6 +352,88 @@ public partial class MainWindow : Window
         {
             _isUpdatingEngineUi = false;
         }
+    }
+
+    private void LoadStartupRegistrationUi()
+    {
+        _isUpdatingStartupUi = true;
+
+        try
+        {
+            RunOnStartupCheckBox.IsChecked = _startupRegistrationService.IsEnabled();
+        }
+        finally
+        {
+            _isUpdatingStartupUi = false;
+        }
+    }
+
+    private async Task LoadProfilesAsync()
+    {
+        IReadOnlyList<InputProfile> storedProfiles = await _inputProfileStore.GetAllAsync();
+        List<InputProfile> profiles = storedProfiles.Count > 0
+            ? [.. storedProfiles]
+            : [_profileManager.ActiveProfile];
+
+        _isUpdatingProfilesUi = true;
+
+        try
+        {
+            ProfilesComboBox.ItemsSource = profiles;
+            ProfilesComboBox.DisplayMemberPath = nameof(InputProfile.Name);
+
+            InputProfile activeProfile = _profileManager.ActiveProfile;
+            InputProfile? matchingProfile = profiles.FirstOrDefault(p => p.ProfileId == activeProfile.ProfileId);
+
+            ProfilesComboBox.SelectedItem = matchingProfile ?? profiles[0];
+        }
+        finally
+        {
+            _isUpdatingProfilesUi = false;
+        }
+    }
+
+    private async Task SaveLastActiveProfileAsync(InputProfile profile)
+    {
+        bool profileExists = await _inputProfileStore.ExistsAsync(profile.ProfileId);
+        _appConfiguration.LastActiveProfileId = profileExists ? profile.ProfileId : null;
+        await _appConfigurationStore.SaveConfigurationAsync(_appConfiguration);
+    }
+
+    private void LoadSettingsTabFromActiveProfile()
+    {
+        SettingsTabViewContent.LoadProfile(_profileManager.ActiveProfile);
+    }
+
+    private void RegisterActiveProfileHotkey()
+    {
+        try
+        {
+            _globalHotkey.UnregisterHotKey();
+            _globalHotkey.RegisterHotKey(_profileManager.ActiveProfile.StartStopHotkey);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                ex.Message,
+                "Hotkey Registration Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private async void GlobalHotkey_HotkeyPressed(object? sender, EventArgs e)
+    {
+        await _engine.ToggleExecutionAsync();
+        Dispatcher.Invoke(RefreshEngineUi);
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        _ = hwnd;
+
+        handled = _globalHotkey.HandleWindowMessage((uint)msg, wParam, lParam);
+        return IntPtr.Zero;
     }
 
     private void ShowWindow()

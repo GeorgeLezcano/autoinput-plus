@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
+using AutoInputPlus.Core.Models;
 using AutoInputPlus.Engine;
+using AutoInputPlus.Engine.Profile;
 using AutoInputPlus.Infrastructure;
 using AutoInputPlus.Input.Windows;
 using AutoInputPlus.Wpf.Services;
@@ -57,13 +58,46 @@ public partial class App : Application
         _serviceProvider = services.BuildServiceProvider();
 
         _trayIconManager = _serviceProvider.GetRequiredService<TrayIconManager>();
-
-        ThemeManager.ApplyTheme(AppTheme.LightBlue);
-
-        // TODO Engine enabled/disabled logic from registry.
-        // Engine will always start enabled as of now for testing.
         _engine = _serviceProvider.GetRequiredService<IEngine>();
-        await _engine.EnableAsync();
+
+        IAppConfigurationStore appConfigurationStore =
+            _serviceProvider.GetRequiredService<IAppConfigurationStore>();
+        IInputProfileStore inputProfileStore =
+            _serviceProvider.GetRequiredService<IInputProfileStore>();
+        IProfileManager profileManager =
+            _serviceProvider.GetRequiredService<IProfileManager>();
+
+        AppConfiguration configuration = await appConfigurationStore.LoadConfigurationAsync();
+        IReadOnlyList<InputProfile> profiles = await inputProfileStore.GetAllAsync();
+
+        InputProfile activeProfile;
+
+        if (profiles.Count > 0)
+        {
+            activeProfile = profiles.FirstOrDefault(p => p.ProfileId == configuration.LastActiveProfileId)
+                ?? profiles[0];
+        }
+        else
+        {
+            activeProfile = ProfileManager.CreateDefaultProfile();
+        }
+
+        profileManager.SetActiveProfile(activeProfile);
+
+        ThemeManager.ApplyTheme(configuration.AppTheme);
+
+        if (configuration.EngineEnabled)
+        {
+            await _engine.EnableAsync();
+        }
+        else
+        {
+            await _engine.DisableAsync();
+        }
+
+        MainWindow mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+        MainWindow = mainWindow;
+        mainWindow.Show();
     }
 
     /// <summary>

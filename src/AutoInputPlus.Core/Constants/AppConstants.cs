@@ -48,6 +48,7 @@ public static class AppConstants
 
     /// <summary>
     /// Default sequence step display name format.
+    /// {0} => The step number {1..int.MaxValue}
     /// </summary>
     public const string DefaultSequenceStepNameFormat = "Step {0}";
 

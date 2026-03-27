@@ -17,11 +17,6 @@ public sealed class AppConfiguration
     public Guid? LastActiveProfileId { get; set; }
 
     /// <summary>
-    /// Flag that indicates if the application should run when Operating System starts.
-    /// </summary>
-    public bool RunOnSystemStartup { get; set; }
-
-    /// <summary>
     /// Selected application theme.
     /// </summary>
     public AppTheme AppTheme { get; set; }

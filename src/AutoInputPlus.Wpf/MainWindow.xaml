@@ -3,23 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:AutoInputPlus.Wpf.Views"
         Title="AutoInput Plus"
-        Height="800"
-        Width="1100"
-        MinHeight="640"
-        MinWidth="980"
+        Width="1160"
+        Height="780"
+        MinWidth="1100"
+        MinHeight="720"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource AppBackgroundBrush}">
 
     <DockPanel>
-
         <Menu DockPanel.Dock="Top"
+              Padding="12,8"
               Background="{DynamicResource SurfaceBrush}"
-              BorderBrush="{DynamicResource BorderBrushSoft}"
-              BorderThickness="0,0,0,1">
+              Foreground="{DynamicResource TextBrushPrimary}">
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="Import Profile."
-                          Click="ImportProfile_Click">
+                <MenuItem Header="_Export Active Profile"
+                          Click="ExportProfile_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Background"
@@ -39,8 +38,8 @@
                     </MenuItem.Style>
                 </MenuItem>
 
-                <MenuItem Header="Export Profile."
-                          Click="ExportProfile_Click">
+                <MenuItem Header="_Import Profile"
+                          Click="ImportProfile_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
                             <Setter Property="Background"
@@ -62,7 +61,7 @@
 
                 <Separator/>
 
-                <MenuItem Header="Open Data Folder"
+                <MenuItem Header="_Open Data Folder"
                           Click="OpenDataFolderMenuItem_Click">
                     <MenuItem.Style>
                         <Style TargetType="MenuItem">
@@ -163,14 +162,26 @@
                                    FontSize="18"
                                    FontWeight="SemiBold"/>
 
-                        <CheckBox x:Name="EngineEnabledCheckBox"
-                                  Grid.Column="2"
-                                  VerticalAlignment="Center"
-                                  Checked="EngineEnabledCheckBox_Checked"
-                                  Unchecked="EngineEnabledCheckBox_Unchecked">
-                            <TextBlock Text="Enabled"
-                                       FontWeight="SemiBold"/>
-                        </CheckBox>
+                        <StackPanel Grid.Column="2"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <CheckBox x:Name="EngineEnabledCheckBox"
+                                      VerticalAlignment="Center"
+                                      Checked="EngineEnabledCheckBox_Checked"
+                                      Unchecked="EngineEnabledCheckBox_Unchecked">
+                                <TextBlock Text="Enabled"
+                                           FontWeight="SemiBold"/>
+                            </CheckBox>
+
+                            <CheckBox x:Name="RunOnStartupCheckBox"
+                                      Margin="16,0,0,0"
+                                      VerticalAlignment="Center"
+                                      Checked="RunOnStartupCheckBox_Checked"
+                                      Unchecked="RunOnStartupCheckBox_Unchecked">
+                                <TextBlock Text="Run on Windows startup"
+                                           FontWeight="SemiBold"/>
+                            </CheckBox>
+                        </StackPanel>
 
                         <StackPanel Grid.Column="4"
                                     Orientation="Horizontal"
@@ -223,18 +234,15 @@
                                   Grid.Column="2"
                                   Height="32"
                                   VerticalAlignment="Center"
-                                  SelectedIndex="0"
-                                  HorizontalContentAlignment="Center" 
-                                  SelectionChanged="ProfilesComboBox_SelectionChanged">
-                            <ComboBoxItem Content="Default Profile"/>
-                        </ComboBox>
+                                  HorizontalContentAlignment="Center"
+                                  SelectionChanged="ProfilesComboBox_SelectionChanged"/>
 
                         <Button x:Name="NewProfileButton"
                                 Grid.Column="4"
                                 Content="New"
                                 Width="72"
                                 Height="32"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="NewProfileButton_Click"/>
 
                         <Button x:Name="RenameProfileButton"
@@ -242,7 +250,7 @@
                                 Content="Rename"
                                 Width="82"
                                 Height="32"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="RenameProfileButton_Click"/>
 
                         <Button x:Name="DeleteProfileButton"
@@ -250,7 +258,7 @@
                                 Content="Delete"
                                 Width="78"
                                 Height="32"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="DeleteProfileButton_Click"/>
                     </Grid>
                 </Border>
@@ -262,7 +270,7 @@
 
                 <TabItem x:Name="SettingsTab"
                          Header="Settings">
-                    <views:SettingsTabView/>
+                    <views:SettingsTabView x:Name="SettingsTabViewContent"/>
                 </TabItem>
 
                 <TabItem x:Name="SequenceTab"
