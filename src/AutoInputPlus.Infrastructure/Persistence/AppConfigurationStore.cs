@@ -46,8 +46,19 @@ public sealed class AppConfigurationStore : IAppConfigurationStore
             return new AppConfiguration();
         }
 
-        AppConfiguration? configuration = JsonSerializer.Deserialize<AppConfiguration>(json, SerializerOptions);
-        return configuration ?? new AppConfiguration();
+        try
+        {
+            AppConfiguration? configuration = JsonSerializer.Deserialize<AppConfiguration>(json, SerializerOptions);
+            return configuration ?? new AppConfiguration();
+        }
+        catch (JsonException)
+        {
+            return new AppConfiguration();
+        }
+        catch (NotSupportedException)
+        {
+            return new AppConfiguration();
+        }
     }
 
     /// <inheritdoc/>

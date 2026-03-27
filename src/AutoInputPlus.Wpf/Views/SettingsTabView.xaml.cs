@@ -77,8 +77,10 @@ public partial class SettingsTabView : UserControl
             SingleInputModeRadioButton.IsChecked = !profile.SequenceModeActive;
             SequenceModeRadioButton.IsChecked = profile.SequenceModeActive;
 
-            CaptureHotkeyButton.Content = profile.StartStopHotkey.ToString();
-            CaptureTargetKeyButton.Content = profile.TargetInputBinding.ToDisplayName();
+            CaptureHotkeyButton.Content = profile.StartStopHotkey?.ToString() ?? "Set Hotkey";
+            CaptureTargetKeyButton.Content = profile.TargetInputBinding is null
+                ? "Set Target"
+                : profile.TargetInputBinding.ToDisplayName();
 
             IntervalTextBox.Text = profile.IntervalMilliseconds.ToString(CultureInfo.CurrentCulture);
             HoldCheckBox.IsChecked = profile.HoldTargetEnabled;
@@ -130,7 +132,7 @@ public partial class SettingsTabView : UserControl
         _isCapturingTargetBinding = false;
         CaptureHotkeyButton.Content = "Press key...";
         Focus();
-        Keyboard.Focus(this);
+        _ = Keyboard.Focus(this);
     }
 
     private void CaptureTargetKeyButton_Click(object sender, RoutedEventArgs e)
@@ -139,7 +141,7 @@ public partial class SettingsTabView : UserControl
         _isCapturingHotkey = false;
         CaptureTargetKeyButton.Content = "Press key...";
         Focus();
-        Keyboard.Focus(this);
+        _ = Keyboard.Focus(this);
     }
 
     private async void IntervalTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -341,7 +343,7 @@ public partial class SettingsTabView : UserControl
         _isCapturingTargetBinding = false;
     }
 
-    private HotkeyModifiers GetCurrentModifiers()
+    private static HotkeyModifiers GetCurrentModifiers()
     {
         HotkeyModifiers modifiers = HotkeyModifiers.None;
 
@@ -395,6 +397,11 @@ public partial class SettingsTabView : UserControl
 
     private void UpdateRunBehaviorUi()
     {
+        if (RunForSetCountRadioButton is null || RunCountTextBox is null)
+        {
+            return;
+        }
+
         bool runForSetCount = RunForSetCountRadioButton.IsChecked == true;
         RunCountTextBox.IsEnabled = runForSetCount;
     }
@@ -456,7 +463,7 @@ public partial class SettingsTabView : UserControl
         }
     }
 
-    private static bool TryMapToInputKey(WpfKey key, out InputKey inputKey)
+    private static bool TryMapToInputKey(WpfKey key, out InputKey inputKey) //TODO Fix this? Doesnt seem to be working
     {
         if (key == WpfKey.System)
         {

@@ -410,6 +410,12 @@ public partial class MainWindow : Window
         try
         {
             _globalHotkey.UnregisterHotKey();
+
+            if (_profileManager.ActiveProfile.StartStopHotkey is null)
+            {
+                return;
+            }
+
             _globalHotkey.RegisterHotKey(_profileManager.ActiveProfile.StartStopHotkey);
         }
         catch (Exception ex)

@@ -55,16 +55,31 @@ public sealed class InputProfileStore : IInputProfileStore
             return [];
         }
 
-        string[] files = Directory.GetFiles(_profilesDirectoryPath, "*.json"); //TODO Move filter to constants
+        string[] files = Directory.GetFiles(_profilesDirectoryPath, "*.json");
         List<InputProfile> profiles = [];
 
         foreach (string file in files)
         {
-            InputProfile? profile = await TryLoadProfileFromFileAsync(file);
-
-            if (profile is not null)
+            try
             {
-                profiles.Add(profile);
+                InputProfile? profile = await TryLoadProfileFromFileAsync(file);
+
+                if (profile is not null)
+                {
+                    profiles.Add(profile);
+                }
+            }
+            catch (JsonException)
+            {
+                // TODO log invalid profile file later
+            }
+            catch (NotSupportedException)
+            {
+                // TODO log invalid profile file later
+            }
+            catch (InvalidOperationException)
+            {
+                // TODO log invalid profile file later
             }
         }
 
