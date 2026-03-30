@@ -241,9 +241,8 @@
                                 Grid.Column="4"
                                 Content="New"
                                 Width="72"
-                                Height="32"
                                 HorizontalContentAlignment="Center"
-                                Click="NewProfileButton_Click"/>
+                                Click="NewProfileButton_Click" Grid.ColumnSpan="2" Margin="0,0,8,0"/>
 
                         <Button x:Name="RenameProfileButton"
                                 Grid.Column="6"

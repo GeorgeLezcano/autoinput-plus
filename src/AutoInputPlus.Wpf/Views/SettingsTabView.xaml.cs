@@ -32,6 +32,11 @@ public partial class SettingsTabView : UserControl
     private bool _isCapturingTargetBinding;
 
     /// <summary>
+    /// Raised after the active profile is changed and saved from this view.
+    /// </summary>
+    public event EventHandler? ActiveProfileUpdated;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SettingsTabView"/> class.
     /// </summary>
     public SettingsTabView()
@@ -46,6 +51,8 @@ public partial class SettingsTabView : UserControl
 
         DataObject.AddPastingHandler(IntervalTextBox, IntegerTextBox_Pasting);
         DataObject.AddPastingHandler(RunCountTextBox, IntegerTextBox_Pasting);
+
+        DisableScheduleUi();
     }
 
     /// <summary>
@@ -85,6 +92,12 @@ public partial class SettingsTabView : UserControl
             IntervalTextBox.Text = profile.IntervalMilliseconds.ToString(CultureInfo.CurrentCulture);
             HoldCheckBox.IsChecked = profile.HoldTargetEnabled;
 
+            if (profile.HoldTargetEnabled)
+            {
+                profile.RunUntilStopActive = true;
+                profile.RunUntilSetCountActive = false;
+            }
+
             RunUntilStopRadioButton.IsChecked = profile.RunUntilStopActive;
             RunForSetCountRadioButton.IsChecked = profile.RunUntilSetCountActive;
             RunCountTextBox.Text = profile.StopInputCount.ToString(CultureInfo.CurrentCulture);
@@ -100,9 +113,10 @@ public partial class SettingsTabView : UserControl
         UpdateInputBehaviorUi();
         UpdateRunBehaviorUi();
         StopCaptureMode();
+        DisableScheduleUi();
     }
 
-    #region Hanlders
+    #region Handlers
 
     private async void SingleInputModeRadioButton_Checked(object sender, RoutedEventArgs e)
     {
@@ -112,7 +126,7 @@ public partial class SettingsTabView : UserControl
         }
 
         profile.SequenceModeActive = false;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void SequenceModeRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -123,7 +137,7 @@ public partial class SettingsTabView : UserControl
         }
 
         profile.SequenceModeActive = true;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private void CaptureHotkeyButton_Click(object sender, RoutedEventArgs e)
@@ -151,13 +165,18 @@ public partial class SettingsTabView : UserControl
             return;
         }
 
+        if (profile.HoldTargetEnabled)
+        {
+            return;
+        }
+
         if (!TryParsePositiveInteger(IntervalTextBox.Text, out int intervalMilliseconds))
         {
             return;
         }
 
         profile.IntervalMilliseconds = intervalMilliseconds;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void RunUntilStopRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -171,7 +190,7 @@ public partial class SettingsTabView : UserControl
 
         profile.RunUntilStopActive = true;
         profile.RunUntilSetCountActive = false;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void RunForSetCountRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -183,14 +202,40 @@ public partial class SettingsTabView : UserControl
             return;
         }
 
+        if (profile.HoldTargetEnabled)
+        {
+            profile.RunUntilStopActive = true;
+            profile.RunUntilSetCountActive = false;
+
+            _isLoadingProfile = true;
+            try
+            {
+                RunUntilStopRadioButton.IsChecked = true;
+                RunForSetCountRadioButton.IsChecked = false;
+            }
+            finally
+            {
+                _isLoadingProfile = false;
+            }
+
+            UpdateRunBehaviorUi();
+            await SaveProfileAndNotifyAsync(profile, profileStore);
+            return;
+        }
+
         profile.RunUntilStopActive = false;
         profile.RunUntilSetCountActive = true;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void RunCountTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
+        {
+            return;
+        }
+
+        if (profile.HoldTargetEnabled || profile.RunUntilStopActive)
         {
             return;
         }
@@ -201,7 +246,7 @@ public partial class SettingsTabView : UserControl
         }
 
         profile.StopInputCount = stopInputCount;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void HoldCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -214,7 +259,22 @@ public partial class SettingsTabView : UserControl
         }
 
         profile.HoldTargetEnabled = true;
-        await profileStore.SaveProfileAsync(profile);
+        profile.RunUntilStopActive = true;
+        profile.RunUntilSetCountActive = false;
+
+        _isLoadingProfile = true;
+        try
+        {
+            RunUntilStopRadioButton.IsChecked = true;
+            RunForSetCountRadioButton.IsChecked = false;
+        }
+        finally
+        {
+            _isLoadingProfile = false;
+        }
+
+        UpdateRunBehaviorUi();
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private async void HoldCheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -227,27 +287,29 @@ public partial class SettingsTabView : UserControl
         }
 
         profile.HoldTargetEnabled = false;
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
+
+        UpdateRunBehaviorUi();
     }
 
     private void ScheduleStartEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
     {
-        // TODO Future schedule implementation.
+        DisableScheduleUi();
     }
 
     private void ScheduleStartEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
     {
-        // TODO Future schedule implementation.
+        DisableScheduleUi();
     }
 
     private void ScheduleStopEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
     {
-        // TODO Future schedule implementation.
+        DisableScheduleUi();
     }
 
-    private void ScheduleStopEnabledCheckBox_Uchecked(object sender, RoutedEventArgs e)
+    private void ScheduleStopEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
     {
-        // TODO Future schedule implementation.
+        DisableScheduleUi();
     }
 
     #endregion
@@ -279,7 +341,7 @@ public partial class SettingsTabView : UserControl
             CaptureHotkeyButton.Content = hotkey.ToString();
             StopCaptureMode();
 
-            await profileStore.SaveProfileAsync(profile);
+            await SaveProfileAndNotifyAsync(profile, profileStore);
             return;
         }
 
@@ -304,7 +366,7 @@ public partial class SettingsTabView : UserControl
             CaptureTargetKeyButton.Content = binding.ToDisplayName();
             StopCaptureMode();
 
-            await profileStore.SaveProfileAsync(profile);
+            await SaveProfileAndNotifyAsync(profile, profileStore);
         }
     }
 
@@ -334,7 +396,7 @@ public partial class SettingsTabView : UserControl
         CaptureTargetKeyButton.Content = binding.ToDisplayName();
         StopCaptureMode();
 
-        await profileStore.SaveProfileAsync(profile);
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
     private void StopCaptureMode()
@@ -397,10 +459,25 @@ public partial class SettingsTabView : UserControl
 
     private void UpdateRunBehaviorUi()
     {
-        if (RunForSetCountRadioButton is null || RunCountTextBox is null)
+        if (RunForSetCountRadioButton is null || RunCountTextBox is null || RunUntilStopRadioButton is null)
         {
             return;
         }
+
+        bool holdEnabled = HoldCheckBox.IsChecked == true;
+
+        if (holdEnabled)
+        {
+            RunUntilStopRadioButton.IsEnabled = true;
+            RunForSetCountRadioButton.IsEnabled = false;
+            RunUntilStopRadioButton.IsChecked = true;
+            RunForSetCountRadioButton.IsChecked = false;
+            RunCountTextBox.IsEnabled = false;
+            return;
+        }
+
+        RunUntilStopRadioButton.IsEnabled = true;
+        RunForSetCountRadioButton.IsEnabled = true;
 
         bool runForSetCount = RunForSetCountRadioButton.IsChecked == true;
         RunCountTextBox.IsEnabled = runForSetCount;
@@ -410,6 +487,27 @@ public partial class SettingsTabView : UserControl
     {
         bool holdEnabled = HoldCheckBox.IsChecked == true;
         IntervalTextBox.IsEnabled = !holdEnabled;
+    }
+
+    private void DisableScheduleUi()
+    {
+        if (ScheduleStartEnabledCheckBox is null)
+        {
+            return;
+        }
+
+        ScheduleStartEnabledCheckBox.IsChecked = false;
+        ScheduleStopEnabledCheckBox.IsChecked = false;
+
+        ScheduleStartDatePicker.IsEnabled = false;
+        ScheduleStartHourTextBox.IsEnabled = false;
+        ScheduleStartMinuteTextBox.IsEnabled = false;
+        ScheduleStartSecondTextBox.IsEnabled = false;
+
+        ScheduleStopDatePicker.IsEnabled = false;
+        ScheduleStopHourTextBox.IsEnabled = false;
+        ScheduleStopMinuteTextBox.IsEnabled = false;
+        ScheduleStopSecondTextBox.IsEnabled = false;
     }
 
     private static bool TryParsePositiveInteger(string? text, out int value)
@@ -435,6 +533,12 @@ public partial class SettingsTabView : UserControl
         profile = _profileManager.ActiveProfile;
         profileStore = _inputProfileStore;
         return true;
+    }
+
+    private async Task SaveProfileAndNotifyAsync(InputProfile profile, IInputProfileStore profileStore)
+    {
+        await profileStore.SaveProfileAsync(profile);
+        ActiveProfileUpdated?.Invoke(this, EventArgs.Empty);
     }
 
     #endregion
@@ -463,13 +567,8 @@ public partial class SettingsTabView : UserControl
         }
     }
 
-    private static bool TryMapToInputKey(WpfKey key, out InputKey inputKey) //TODO Fix this? Doesnt seem to be working
+    private static bool TryMapToInputKey(WpfKey key, out InputKey inputKey)
     {
-        if (key == WpfKey.System)
-        {
-            key = Keyboard.FocusedElement is not null ? KeyInterop.KeyFromVirtualKey(KeyInterop.VirtualKeyFromKey(Key.System)) : key;
-        }
-
         switch (key)
         {
             case WpfKey.A: inputKey = InputKey.A; return true;
@@ -498,7 +597,6 @@ public partial class SettingsTabView : UserControl
             case WpfKey.X: inputKey = InputKey.X; return true;
             case WpfKey.Y: inputKey = InputKey.Y; return true;
             case WpfKey.Z: inputKey = InputKey.Z; return true;
-
             case WpfKey.D0: inputKey = InputKey.D0; return true;
             case WpfKey.D1: inputKey = InputKey.D1; return true;
             case WpfKey.D2: inputKey = InputKey.D2; return true;
@@ -509,7 +607,6 @@ public partial class SettingsTabView : UserControl
             case WpfKey.D7: inputKey = InputKey.D7; return true;
             case WpfKey.D8: inputKey = InputKey.D8; return true;
             case WpfKey.D9: inputKey = InputKey.D9; return true;
-
             case WpfKey.NumPad0: inputKey = InputKey.NumPad0; return true;
             case WpfKey.NumPad1: inputKey = InputKey.NumPad1; return true;
             case WpfKey.NumPad2: inputKey = InputKey.NumPad2; return true;
@@ -526,7 +623,6 @@ public partial class SettingsTabView : UserControl
             case WpfKey.Subtract: inputKey = InputKey.Subtract; return true;
             case WpfKey.Decimal: inputKey = InputKey.Decimal; return true;
             case WpfKey.Divide: inputKey = InputKey.Divide; return true;
-
             case WpfKey.F1: inputKey = InputKey.F1; return true;
             case WpfKey.F2: inputKey = InputKey.F2; return true;
             case WpfKey.F3: inputKey = InputKey.F3; return true;
@@ -539,7 +635,6 @@ public partial class SettingsTabView : UserControl
             case WpfKey.F10: inputKey = InputKey.F10; return true;
             case WpfKey.F11: inputKey = InputKey.F11; return true;
             case WpfKey.F12: inputKey = InputKey.F12; return true;
-
             case WpfKey.Back: inputKey = InputKey.Backspace; return true;
             case WpfKey.Tab: inputKey = InputKey.Tab; return true;
             case WpfKey.Enter: inputKey = InputKey.Enter; return true;
@@ -558,17 +653,14 @@ public partial class SettingsTabView : UserControl
             case WpfKey.Insert: inputKey = InputKey.Insert; return true;
             case WpfKey.Delete: inputKey = InputKey.Delete; return true;
             case WpfKey.PrintScreen: inputKey = InputKey.PrintScreen; return true;
-
             case WpfKey.LWin: inputKey = InputKey.LeftWin; return true;
             case WpfKey.RWin: inputKey = InputKey.RightWin; return true;
-
             case WpfKey.LeftShift: inputKey = InputKey.LeftShift; return true;
             case WpfKey.RightShift: inputKey = InputKey.RightShift; return true;
             case WpfKey.LeftCtrl: inputKey = InputKey.LeftCtrl; return true;
             case WpfKey.RightCtrl: inputKey = InputKey.RightCtrl; return true;
             case WpfKey.LeftAlt: inputKey = InputKey.LeftAlt; return true;
             case WpfKey.RightAlt: inputKey = InputKey.RightAlt; return true;
-
             default:
                 inputKey = default;
                 return false;

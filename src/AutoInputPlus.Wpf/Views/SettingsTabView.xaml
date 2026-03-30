@@ -293,10 +293,10 @@
 
                         <StackPanel Grid.Column="2">
                             <CheckBox x:Name="ScheduleStopEnabledCheckBox"
-                                      Content="Use scheduled stop"
-                                      Margin="0,0,0,8" 
-                                      Checked="ScheduleStopEnabledCheckBox_Checked"
-                                      Unchecked="ScheduleStopEnabledCheckBox_Uchecked"/>
+                                  Content="Use scheduled stop"
+                                  Margin="0,0,0,8" 
+                                  Checked="ScheduleStopEnabledCheckBox_Checked"
+                                  Unchecked="ScheduleStopEnabledCheckBox_Unchecked"/>       
                             <TextBlock Text="Stop Date / Time"
                                        Margin="0,0,0,6"/>
 

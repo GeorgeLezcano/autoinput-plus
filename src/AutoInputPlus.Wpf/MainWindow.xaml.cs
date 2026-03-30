@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using AutoInputPlus.Core.Constants;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
+using AutoInputPlus.Engine.Profile;
 using AutoInputPlus.Wpf.Services;
 using AutoInputPlus.Wpf.Views.Dialogs;
 using Brush = System.Windows.Media.Brush;
@@ -21,6 +22,8 @@ namespace AutoInputPlus.Wpf;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private const int MaxProfileNameLength = 100;
+
     private bool _allowClose;
     private bool _isUpdatingEngineUi;
     private bool _isUpdatingStartupUi;
@@ -101,6 +104,7 @@ public partial class MainWindow : Window
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
+        SettingsTabViewContent.ActiveProfileUpdated += SettingsTabViewContent_ActiveProfileUpdated;
 
         _appConfiguration = await _appConfigurationStore.LoadConfigurationAsync();
 
@@ -109,6 +113,7 @@ public partial class MainWindow : Window
         UpdateThemeMenuChecks(ThemeManager.CurrentTheme);
         RefreshEngineUi();
         LoadStartupRegistrationUi();
+        await EnsureAtLeastOneProfileExistsAsync();
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
     }
@@ -131,6 +136,7 @@ public partial class MainWindow : Window
     private void MainWindow_Closed(object? sender, EventArgs e)
     {
         ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+        SettingsTabViewContent.ActiveProfileUpdated -= SettingsTabViewContent_ActiveProfileUpdated;
         _globalHotkey.HotkeyPressed -= GlobalHotkey_HotkeyPressed;
 
         if (_windowSource is not null)
@@ -200,13 +206,17 @@ public partial class MainWindow : Window
         }
 
         InputProfile importedProfile = await _profileExchange.ImportProfileAsync(dialog.EncodedProfile);
+        importedProfile.Name = GenerateUniqueProfileName(importedProfile.Name);
         await _inputProfileStore.SaveProfileAsync(importedProfile);
+
+        await StopEngineIfExecutingAsync();
 
         _profileManager.SetActiveProfile(importedProfile);
         await SaveLastActiveProfileAsync(importedProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
         RegisterActiveProfileHotkey();
+        RefreshEngineUi();
     }
 
     private async void EngineEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -262,25 +272,102 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (_profileManager.ActiveProfile.ProfileId == selectedProfile.ProfileId)
+        {
+            return;
+        }
+
+        await StopEngineIfExecutingAsync();
+
         _profileManager.SetActiveProfile(selectedProfile);
         await SaveLastActiveProfileAsync(selectedProfile);
         LoadSettingsTabFromActiveProfile();
         RegisterActiveProfileHotkey();
+        RefreshEngineUi();
     }
 
-    private void NewProfileButton_Click(object sender, RoutedEventArgs e)
+    private async void NewProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        System.Windows.MessageBox.Show($"Feature '{nameof(NewProfileButton_Click)}' not implemented");
+        InputProfile newProfile = ProfileManager.CreateDefaultProfile();
+        newProfile.Name = GenerateUniqueProfileName(AppConstants.DefaultInputProfileName);
+
+        await _inputProfileStore.SaveProfileAsync(newProfile);
+
+        await StopEngineIfExecutingAsync();
+
+        _profileManager.SetActiveProfile(newProfile);
+        await SaveLastActiveProfileAsync(newProfile);
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
+        RegisterActiveProfileHotkey();
+        RefreshEngineUi();
     }
 
-    private void RenameProfileButton_Click(object sender, RoutedEventArgs e)
+    private async void RenameProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        System.Windows.MessageBox.Show($"Feature '{nameof(RenameProfileButton_Click)}' not implemented");
+        InputProfile activeProfile = _profileManager.ActiveProfile;
+
+        var dialog = new TextInputDialogWindow(
+            title: "Rename Profile",
+            prompt: "Profile name",
+            initialValue: activeProfile.Name,
+            validator: ValidateProfileName)
+        {
+            Owner = this
+        };
+
+        bool? dialogResult = dialog.ShowDialog();
+
+        if (dialogResult != true)
+        {
+            return;
+        }
+
+        activeProfile.Name = dialog.Value;
+        await _inputProfileStore.SaveProfileAsync(activeProfile);
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
     }
 
-    private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
+    private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        System.Windows.MessageBox.Show($"Feature '{nameof(DeleteProfileButton_Click)}' not implemented");
+        IReadOnlyList<InputProfile> profiles = await _inputProfileStore.GetAllAsync();
+        if (profiles.Count == 0)
+        {
+            await EnsureAtLeastOneProfileExistsAsync();
+            await LoadProfilesAsync();
+            LoadSettingsTabFromActiveProfile();
+            RegisterActiveProfileHotkey();
+            RefreshEngineUi();
+            return;
+        }
+
+        await StopEngineIfExecutingAsync();
+
+        InputProfile activeProfile = _profileManager.ActiveProfile;
+        int activeIndex = profiles.ToList().FindIndex(p => p.ProfileId == activeProfile.ProfileId);
+        int safeActiveIndex = activeIndex >= 0 ? activeIndex : 0;
+
+        await _inputProfileStore.DeleteProfileAsync(activeProfile.ProfileId);
+
+        List<InputProfile> remainingProfiles = [.. await _inputProfileStore.GetAllAsync()];
+
+        if (remainingProfiles.Count == 0)
+        {
+            InputProfile defaultProfile = ProfileManager.CreateDefaultProfile();
+            await _inputProfileStore.SaveProfileAsync(defaultProfile);
+            remainingProfiles.Add(defaultProfile);
+        }
+
+        int nextIndex = Math.Min(safeActiveIndex, remainingProfiles.Count - 1);
+        InputProfile nextProfile = remainingProfiles[nextIndex];
+
+        _profileManager.SetActiveProfile(nextProfile);
+        await SaveLastActiveProfileAsync(nextProfile);
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
+        RegisterActiveProfileHotkey();
+        RefreshEngineUi();
     }
 
     #endregion
@@ -292,6 +379,24 @@ public partial class MainWindow : Window
         UpdateThemeMenuChecks(appTheme);
         _appConfiguration.AppTheme = appTheme;
         await _appConfigurationStore.SaveConfigurationAsync(_appConfiguration);
+    }
+
+    private async void SettingsTabViewContent_ActiveProfileUpdated(object? sender, EventArgs e)
+    {
+        await StopEngineIfExecutingAsync();
+        await SaveLastActiveProfileAsync(_profileManager.ActiveProfile);
+        await LoadProfilesAsync();
+        LoadSettingsTabFromActiveProfile();
+        RegisterActiveProfileHotkey();
+        RefreshEngineUi();
+    }
+
+    private async Task StopEngineIfExecutingAsync()
+    {
+        if (_engine.State == EngineState.Running || _engine.State == EngineState.Scheduled)
+        {
+            await _engine.StopAsync();
+        }
     }
 
     private void UpdateThemeMenuChecks(AppTheme appTheme)
@@ -368,6 +473,24 @@ public partial class MainWindow : Window
         }
     }
 
+    private async Task EnsureAtLeastOneProfileExistsAsync()
+    {
+        IReadOnlyList<InputProfile> storedProfiles = await _inputProfileStore.GetAllAsync();
+        if (storedProfiles.Count > 0)
+        {
+            return;
+        }
+
+        InputProfile activeProfile = _profileManager.ActiveProfile;
+        if (activeProfile.ProfileId == Guid.Empty)
+        {
+            activeProfile = ProfileManager.CreateDefaultProfile();
+            _profileManager.SetActiveProfile(activeProfile);
+        }
+
+        await _inputProfileStore.SaveProfileAsync(activeProfile);
+    }
+
     private async Task LoadProfilesAsync()
     {
         IReadOnlyList<InputProfile> storedProfiles = await _inputProfileStore.GetAllAsync();
@@ -432,6 +555,52 @@ public partial class MainWindow : Window
     {
         await _engine.ToggleExecutionAsync();
         Dispatcher.Invoke(RefreshEngineUi);
+    }
+
+    private string? ValidateProfileName(string rawName)
+    {
+        string trimmedName = rawName.Trim();
+
+        if (string.IsNullOrWhiteSpace(trimmedName))
+        {
+            return "Name is required.";
+        }
+
+        if (trimmedName.Length > MaxProfileNameLength)
+        {
+            return $"Name must be {MaxProfileNameLength} characters or less.";
+        }
+
+        return null;
+    }
+
+    private string GenerateUniqueProfileName(string baseName)
+    {
+        string normalizedBaseName = string.IsNullOrWhiteSpace(baseName)
+            ? AppConstants.DefaultInputProfileName
+            : baseName.Trim();
+
+        List<string> existingNames = ProfilesComboBox.Items
+            .OfType<InputProfile>()
+            .Select(profile => profile.Name)
+            .ToList();
+
+        if (!existingNames.Any(name => string.Equals(name, normalizedBaseName, StringComparison.OrdinalIgnoreCase)))
+        {
+            return normalizedBaseName;
+        }
+
+        int suffix = 2;
+        string candidateName;
+
+        do
+        {
+            candidateName = $"{normalizedBaseName} {suffix}";
+            suffix++;
+        }
+        while (existingNames.Any(name => string.Equals(name, candidateName, StringComparison.OrdinalIgnoreCase)));
+
+        return candidateName;
     }
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
