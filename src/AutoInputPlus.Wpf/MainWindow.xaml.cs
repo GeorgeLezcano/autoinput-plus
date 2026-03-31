@@ -105,6 +105,7 @@ public partial class MainWindow : Window
     {
         ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
         SettingsTabViewContent.ActiveProfileUpdated += SettingsTabViewContent_ActiveProfileUpdated;
+        _engine.StateChanged += Engine_StateChanged;
 
         _appConfiguration = await _appConfigurationStore.LoadConfigurationAsync();
 
@@ -139,6 +140,7 @@ public partial class MainWindow : Window
     {
         ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
         SettingsTabViewContent.ActiveProfileUpdated -= SettingsTabViewContent_ActiveProfileUpdated;
+        _engine.StateChanged -= Engine_StateChanged;
         _globalHotkey.HotkeyPressed -= GlobalHotkey_HotkeyPressed;
 
         if (_windowSource is not null)
@@ -408,6 +410,11 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Engine_StateChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.Invoke(RefreshEngineUi);
+    }
+
     private void UpdateThemeMenuChecks(AppTheme appTheme)
     {
         LightBlueThemeMenuItem.IsChecked = appTheme == AppTheme.LightBlue;
@@ -567,6 +574,11 @@ public partial class MainWindow : Window
 
     private async void GlobalHotkey_HotkeyPressed(object? sender, EventArgs e)
     {
+        if (SettingsTabViewContent.IsCapturingInput || SequenceTabViewContent.IsCapturingInput)
+        {
+            return;
+        }
+
         await _engine.ToggleExecutionAsync();
         Dispatcher.Invoke(RefreshEngineUi);
     }

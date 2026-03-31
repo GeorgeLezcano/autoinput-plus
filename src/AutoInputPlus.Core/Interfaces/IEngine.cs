@@ -9,6 +9,11 @@ namespace AutoInputPlus.Core.Interfaces;
 public interface IEngine
 {
     /// <summary>
+    /// Occurs when the engine state changes.
+    /// </summary>
+    event EventHandler? StateChanged;
+
+    /// <summary>
     /// Gets the current state of the engine.
     /// </summary>
     EngineState State { get; }

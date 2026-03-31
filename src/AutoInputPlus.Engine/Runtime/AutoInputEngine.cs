@@ -24,6 +24,9 @@ public sealed class AutoInputEngine(
     private bool _disposed;
 
     /// <inheritdoc/>
+    public event EventHandler? StateChanged;
+
+    /// <inheritdoc/>
     public EngineState State { get; private set; } = EngineState.Disabled;
 
     /// <inheritdoc/>
@@ -37,7 +40,7 @@ public sealed class AutoInputEngine(
         {
             if (State == EngineState.Disabled)
             {
-                State = EngineState.Ready;
+                SetState(EngineState.Ready);
             }
         }
         finally
@@ -70,7 +73,7 @@ public sealed class AutoInputEngine(
 
             _executionTask = null;
             _executionCancellationTokenSource = null;
-            State = EngineState.Disabled;
+            SetState(EngineState.Disabled);
         }
         finally
         {
@@ -111,7 +114,7 @@ public sealed class AutoInputEngine(
             _executionCancellationTokenSource = executionCancellationTokenSource;
             _executionTask = RunExecutionLoopAsync(executionCancellationTokenSource.Token);
 
-            State = EngineState.Running;
+            SetState(EngineState.Running);
         }
         finally
         {
@@ -169,7 +172,7 @@ public sealed class AutoInputEngine(
         {
             if (State != EngineState.Disabled && State != EngineState.Error)
             {
-                State = EngineState.Ready;
+                SetState(EngineState.Ready);
             }
         }
         finally
@@ -273,14 +276,14 @@ public sealed class AutoInputEngine(
         }
         catch
         {
-            State = EngineState.Error;
+            SetState(EngineState.Error);
             throw;
         }
         finally
         {
             if (State == EngineState.Running)
             {
-                State = EngineState.Ready;
+                SetState(EngineState.Ready);
             }
         }
     }
@@ -415,6 +418,17 @@ public sealed class AutoInputEngine(
             _disposed = true;
             GC.SuppressFinalize(this);
         }
+    }
+
+    private void SetState(EngineState newState)
+    {
+        if (State == newState)
+        {
+            return;
+        }
+
+        State = newState;
+        StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void ThrowIfDisposed()

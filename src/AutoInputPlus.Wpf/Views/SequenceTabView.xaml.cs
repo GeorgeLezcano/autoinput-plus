@@ -21,7 +21,7 @@ namespace AutoInputPlus.Wpf.Views;
 /// <summary>
 /// Interaction logic for SequenceTabView.
 /// </summary>
-public partial class SequenceTabView : UserControl
+public partial class SequenceTabView : UserControl, IDisposable
 {
     private static readonly Regex DigitsOnlyRegex = new("^[0-9]+$");
     private const int MaxSequenceNameLength = 100;
@@ -32,7 +32,13 @@ public partial class SequenceTabView : UserControl
     private IProfileManager? _profileManager;
     private IInputProfileStore? _inputProfileStore;
     private bool _isLoadingProfile;
+    private bool _disposed;
     private SequenceStepRow? _capturingStepRow;
+
+    /// <summary>
+    /// Gets a value indicating whether the view is currently capturing a step target.
+    /// </summary>
+    public bool IsCapturingInput => _capturingStepRow is not null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SequenceTabView"/> class.
@@ -43,6 +49,7 @@ public partial class SequenceTabView : UserControl
 
         PreviewKeyDown += SequenceTabView_PreviewKeyDown;
         PreviewMouseDown += SequenceTabView_PreviewMouseDown;
+        IsKeyboardFocusWithinChanged += SequenceTabView_IsKeyboardFocusWithinChanged;
 
         StepsDataGrid.ItemsSource = _stepRows;
 
@@ -75,7 +82,7 @@ public partial class SequenceTabView : UserControl
 
         try
         {
-            StopCaptureMode();
+            CancelCaptureMode();
 
             SequenceListBox.ItemsSource = null;
             SequenceListBox.ItemsSource = profile.Sequences;
@@ -186,7 +193,7 @@ public partial class SequenceTabView : UserControl
 
         selectedSequence.Steps.Add(new SequenceStep
         {
-            Name = string.Format(CultureInfo.CurrentCulture, AppConstants.DefaultSequenceStepNameFormat, selectedSequence.Steps.Count + 1),
+            Name = GetDefaultSequenceStepName(selectedSequence.Steps.Count + 1),
             TargetType = SequenceStepTargetType.Keyboard,
             Key = null,
             MouseButton = null,
@@ -277,7 +284,7 @@ public partial class SequenceTabView : UserControl
             return;
         }
 
-        StopCaptureMode();
+        CancelCaptureMode();
         _capturingStepRow = row;
         row.IsCapturingTarget = true;
         RefreshStepRowDisplays();
@@ -385,14 +392,20 @@ public partial class SequenceTabView : UserControl
         _capturingStepRow.IsCapturingTarget = false;
 
         await SaveProfileAsync(profile, profileStore);
-        StopCaptureMode();
+        CompleteCaptureMode();
         RefreshStepRowDisplays();
     }
 
     private async void SequenceTabView_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (_capturingStepRow is null || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
+        if (_capturingStepRow is null)
         {
+            return;
+        }
+
+        if (!TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
+        {
+            CancelCaptureMode();
             return;
         }
 
@@ -416,11 +429,11 @@ public partial class SequenceTabView : UserControl
         _capturingStepRow.IsCapturingTarget = false;
 
         await SaveProfileAsync(profile, profileStore);
-        StopCaptureMode();
+        CompleteCaptureMode();
         RefreshStepRowDisplays();
     }
 
-    private void StopCaptureMode()
+    private void CompleteCaptureMode()
     {
         if (_capturingStepRow is not null)
         {
@@ -428,6 +441,20 @@ public partial class SequenceTabView : UserControl
         }
 
         _capturingStepRow = null;
+    }
+
+    private void CancelCaptureMode()
+    {
+        CompleteCaptureMode();
+        RefreshStepRowDisplays();
+    }
+
+    private void SequenceTabView_IsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.NewValue is bool isFocusedWithin && !isFocusedWithin && IsCapturingInput)
+        {
+            CancelCaptureMode();
+        }
     }
 
     #endregion
@@ -483,10 +510,7 @@ public partial class SequenceTabView : UserControl
     {
         for (int index = 0; index < sequence.Steps.Count; index++)
         {
-            sequence.Steps[index].Name = string.Format(
-                CultureInfo.CurrentCulture,
-                AppConstants.DefaultSequenceStepNameFormat,
-                index + 1);
+            sequence.Steps[index].Name = GetDefaultSequenceStepName(index + 1);
         }
     }
 
@@ -608,6 +632,24 @@ public partial class SequenceTabView : UserControl
         }
 
         return null;
+    }
+
+    private static string GetDefaultSequenceStepName(int stepNumber)
+    {
+        return $"Step {stepNumber}";
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _saveSemaphore.Dispose();
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 
     #endregion

@@ -4,6 +4,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
+	<NuGetAudit>false</NuGetAudit>
 
         <Version>0.1.0</Version>
 

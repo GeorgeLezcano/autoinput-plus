@@ -1,6 +1,6 @@
 ﻿using AutoInputPlus.Core.Enums;
-using WpfMouseButton = System.Windows.Input.MouseButton;
 using WpfKey = System.Windows.Input.Key;
+using WpfMouseButton = System.Windows.Input.MouseButton;
 
 namespace AutoInputPlus.Wpf.Views;
 

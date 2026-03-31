@@ -4,37 +4,45 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AutoInputPlus.Core.Enums;
-using AutoInputPlus.Core.Extensions;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
-using UserControl = System.Windows.Controls.UserControl;
-using WpfMouseButton = System.Windows.Input.MouseButton;
-using WpfKey = System.Windows.Input.Key;
+using Button = System.Windows.Controls.Button;
 using DataFormats = System.Windows.DataFormats;
+using DataObject = System.Windows.DataObject;
 using InputBinding = AutoInputPlus.Core.Models.InputBinding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using DataObject = System.Windows.DataObject;
+using TextBox = System.Windows.Controls.TextBox;
+using UserControl = System.Windows.Controls.UserControl;
+using WpfKey = System.Windows.Input.Key;
+using WpfMouseButton = System.Windows.Input.MouseButton;
 
 namespace AutoInputPlus.Wpf.Views;
 
 /// <summary>
 /// Interaction logic for SettingsTabView.
 /// </summary>
-public partial class SettingsTabView : UserControl
+public partial class SettingsTabView : UserControl, IDisposable
 {
-    private static readonly Regex DigitsOnlyRegex = new("^[0-9]+$");
+    private static readonly Regex PositiveIntegerRegex = new("^[0-9]+$");
+
+    private readonly SemaphoreSlim _saveSemaphore = new(1, 1);
 
     private IProfileManager? _profileManager;
     private IInputProfileStore? _inputProfileStore;
-
     private bool _isLoadingProfile;
+    private bool _disposed;
     private bool _isCapturingHotkey;
     private bool _isCapturingTargetBinding;
 
     /// <summary>
-    /// Raised after the active profile is changed and saved from this view.
+    /// Occurs when the active profile has been updated and persisted.
     /// </summary>
     public event EventHandler? ActiveProfileUpdated;
+
+    /// <summary>
+    /// Gets a value indicating whether the view is currently capturing a hotkey or target input.
+    /// </summary>
+    public bool IsCapturingInput => _isCapturingHotkey || _isCapturingTargetBinding;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsTabView"/> class.
@@ -45,6 +53,7 @@ public partial class SettingsTabView : UserControl
 
         PreviewKeyDown += SettingsTabView_PreviewKeyDown;
         PreviewMouseDown += SettingsTabView_PreviewMouseDown;
+        IsKeyboardFocusWithinChanged += SettingsTabView_IsKeyboardFocusWithinChanged;
 
         IntervalTextBox.PreviewTextInput += IntegerTextBox_PreviewTextInput;
         RunCountTextBox.PreviewTextInput += IntegerTextBox_PreviewTextInput;
@@ -53,6 +62,8 @@ public partial class SettingsTabView : UserControl
         DataObject.AddPastingHandler(RunCountTextBox, IntegerTextBox_Pasting);
 
         DisableScheduleUi();
+        UpdateInputBehaviorUi();
+        UpdateRunBehaviorUi();
     }
 
     /// <summary>
@@ -81,91 +92,50 @@ public partial class SettingsTabView : UserControl
 
         try
         {
-            SingleInputModeRadioButton.IsChecked = !profile.SequenceModeActive;
-            SequenceModeRadioButton.IsChecked = profile.SequenceModeActive;
+            CancelCaptureMode();
 
             CaptureHotkeyButton.Content = profile.StartStopHotkey?.ToString() ?? "Set Hotkey";
-            CaptureTargetKeyButton.Content = profile.TargetInputBinding is null
-                ? "Set Target"
-                : profile.TargetInputBinding.ToDisplayName();
-
+            CaptureTargetKeyButton.Content = profile.TargetInputBinding?.ToDisplayName() ?? "Set Target";
             IntervalTextBox.Text = profile.IntervalMilliseconds.ToString(CultureInfo.CurrentCulture);
+            RunCountTextBox.Text = Math.Max(1, profile.StopInputCount).ToString(CultureInfo.CurrentCulture);
+
             HoldCheckBox.IsChecked = profile.HoldTargetEnabled;
 
-            if (profile.HoldTargetEnabled)
+            if (profile.SequenceModeActive)
             {
-                profile.RunUntilStopActive = true;
-                profile.RunUntilSetCountActive = false;
+                SequenceModeRadioButton.IsChecked = true;
+                SingleInputModeRadioButton.IsChecked = false;
+            }
+            else
+            {
+                SingleInputModeRadioButton.IsChecked = true;
+                SequenceModeRadioButton.IsChecked = false;
             }
 
-            RunUntilStopRadioButton.IsChecked = profile.RunUntilStopActive;
-            RunForSetCountRadioButton.IsChecked = profile.RunUntilSetCountActive;
-            RunCountTextBox.Text = profile.StopInputCount.ToString(CultureInfo.CurrentCulture);
+            if (profile.RunUntilSetCountActive)
+            {
+                RunForSetCountRadioButton.IsChecked = true;
+                RunUntilStopRadioButton.IsChecked = false;
+            }
+            else
+            {
+                RunUntilStopRadioButton.IsChecked = true;
+                RunForSetCountRadioButton.IsChecked = false;
+            }
 
-            ScheduleStartEnabledCheckBox.IsChecked = profile.ScheduleStartEnabled;
-            ScheduleStopEnabledCheckBox.IsChecked = profile.ScheduleStopEnabled;
+            UpdateInputBehaviorUi();
+            UpdateRunBehaviorUi();
+            DisableScheduleUi();
         }
         finally
         {
             _isLoadingProfile = false;
         }
-
-        UpdateInputBehaviorUi();
-        UpdateRunBehaviorUi();
-        StopCaptureMode();
-        DisableScheduleUi();
-    }
-
-    #region Handlers
-
-    private async void SingleInputModeRadioButton_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
-        {
-            return;
-        }
-
-        profile.SequenceModeActive = false;
-        await SaveProfileAndNotifyAsync(profile, profileStore);
-    }
-
-    private async void SequenceModeRadioButton_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
-        {
-            return;
-        }
-
-        profile.SequenceModeActive = true;
-        await SaveProfileAndNotifyAsync(profile, profileStore);
-    }
-
-    private void CaptureHotkeyButton_Click(object sender, RoutedEventArgs e)
-    {
-        _isCapturingHotkey = true;
-        _isCapturingTargetBinding = false;
-        CaptureHotkeyButton.Content = "Press key...";
-        Focus();
-        _ = Keyboard.Focus(this);
-    }
-
-    private void CaptureTargetKeyButton_Click(object sender, RoutedEventArgs e)
-    {
-        _isCapturingTargetBinding = true;
-        _isCapturingHotkey = false;
-        CaptureTargetKeyButton.Content = "Press key...";
-        Focus();
-        _ = Keyboard.Focus(this);
     }
 
     private async void IntervalTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
-        {
-            return;
-        }
-
-        if (profile.HoldTargetEnabled)
         {
             return;
         }
@@ -288,33 +258,51 @@ public partial class SettingsTabView : UserControl
 
         profile.HoldTargetEnabled = false;
         await SaveProfileAndNotifyAsync(profile, profileStore);
-
-        UpdateRunBehaviorUi();
     }
 
-    private void ScheduleStartEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
+    private async void SingleInputModeRadioButton_Checked(object sender, RoutedEventArgs e)
     {
-        DisableScheduleUi();
+        if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
+        {
+            return;
+        }
+
+        profile.SequenceModeActive = false;
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
-    private void ScheduleStartEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    private async void SequenceModeRadioButton_Checked(object sender, RoutedEventArgs e)
     {
-        DisableScheduleUi();
+        if (_isLoadingProfile || !TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
+        {
+            return;
+        }
+
+        profile.SequenceModeActive = true;
+        await SaveProfileAndNotifyAsync(profile, profileStore);
     }
 
-    private void ScheduleStopEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
+    private void CaptureHotkeyButton_Click(object sender, RoutedEventArgs e)
     {
-        DisableScheduleUi();
+        CancelCaptureMode();
+
+        _isCapturingHotkey = true;
+        _isCapturingTargetBinding = false;
+        CaptureHotkeyButton.Content = "Press key...";
+        Focus();
+        _ = Keyboard.Focus(this);
     }
 
-    private void ScheduleStopEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    private void CaptureTargetKeyButton_Click(object sender, RoutedEventArgs e)
     {
-        DisableScheduleUi();
+        CancelCaptureMode();
+
+        _isCapturingTargetBinding = true;
+        _isCapturingHotkey = false;
+        CaptureTargetKeyButton.Content = "Press key...";
+        Focus();
+        _ = Keyboard.Focus(this);
     }
-
-    #endregion
-
-    #region Capture
 
     private async void SettingsTabView_PreviewKeyDown(object sender, KeyEventArgs e)
     {
@@ -324,7 +312,6 @@ public partial class SettingsTabView : UserControl
 
             if (!TryMapToInputKey(e.Key, out InputKey key))
             {
-                CaptureHotkeyButton.Content = "Unsupported";
                 return;
             }
 
@@ -333,13 +320,13 @@ public partial class SettingsTabView : UserControl
 
             if (!TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
             {
-                StopCaptureMode();
+                CancelCaptureMode();
                 return;
             }
 
             profile.StartStopHotkey = hotkey;
             CaptureHotkeyButton.Content = hotkey.ToString();
-            StopCaptureMode();
+            CompleteCaptureMode();
 
             await SaveProfileAndNotifyAsync(profile, profileStore);
             return;
@@ -351,20 +338,19 @@ public partial class SettingsTabView : UserControl
 
             if (!TryMapToInputKey(e.Key, out InputKey key))
             {
-                CaptureTargetKeyButton.Content = "Unsupported";
                 return;
             }
 
             if (!TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
             {
-                StopCaptureMode();
+                CancelCaptureMode();
                 return;
             }
 
             InputBinding binding = InputBinding.FromKey(key);
             profile.TargetInputBinding = binding;
             CaptureTargetKeyButton.Content = binding.ToDisplayName();
-            StopCaptureMode();
+            CompleteCaptureMode();
 
             await SaveProfileAndNotifyAsync(profile, profileStore);
         }
@@ -374,6 +360,11 @@ public partial class SettingsTabView : UserControl
     {
         if (!_isCapturingTargetBinding)
         {
+            if (IsCapturingInput && !IsClickOnCaptureButton(e.OriginalSource))
+            {
+                CancelCaptureMode();
+            }
+
             return;
         }
 
@@ -381,64 +372,49 @@ public partial class SettingsTabView : UserControl
 
         if (!TryMapToMouseButton(e.ChangedButton, out AutoInputPlus.Core.Enums.MouseButton mouseButton))
         {
-            CaptureTargetKeyButton.Content = "Unsupported";
             return;
         }
 
         if (!TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore))
         {
-            StopCaptureMode();
+            CancelCaptureMode();
             return;
         }
 
         InputBinding binding = InputBinding.FromMouseButton(mouseButton);
         profile.TargetInputBinding = binding;
         CaptureTargetKeyButton.Content = binding.ToDisplayName();
-        StopCaptureMode();
+        CompleteCaptureMode();
 
         await SaveProfileAndNotifyAsync(profile, profileStore);
-    }
-
-    private void StopCaptureMode()
-    {
-        _isCapturingHotkey = false;
-        _isCapturingTargetBinding = false;
     }
 
     private static HotkeyModifiers GetCurrentModifiers()
     {
         HotkeyModifiers modifiers = HotkeyModifiers.None;
+        ModifierKeys keyboardModifiers = Keyboard.Modifiers;
 
-        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        if (keyboardModifiers.HasFlag(ModifierKeys.Control))
         {
             modifiers |= HotkeyModifiers.Control;
         }
 
-        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-        {
-            modifiers |= HotkeyModifiers.Shift;
-        }
-
-        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+        if (keyboardModifiers.HasFlag(ModifierKeys.Alt))
         {
             modifiers |= HotkeyModifiers.Alt;
         }
 
-        if ((Keyboard.Modifiers & ModifierKeys.Windows) == ModifierKeys.Windows)
+        if (keyboardModifiers.HasFlag(ModifierKeys.Shift))
         {
-            modifiers |= HotkeyModifiers.Windows;
+            modifiers |= HotkeyModifiers.Shift;
         }
 
         return modifiers;
     }
 
-    #endregion
-
-    #region Validation / UI
-
     private void IntegerTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
     {
-        e.Handled = !DigitsOnlyRegex.IsMatch(e.Text);
+        e.Handled = !PositiveIntegerRegex.IsMatch(e.Text);
     }
 
     private void IntegerTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
@@ -450,74 +426,146 @@ public partial class SettingsTabView : UserControl
         }
 
         string pastedText = (string)e.DataObject.GetData(DataFormats.Text)!;
-
-        if (!DigitsOnlyRegex.IsMatch(pastedText))
+        if (!PositiveIntegerRegex.IsMatch(pastedText))
         {
             e.CancelCommand();
         }
     }
 
+    private void CompleteCaptureMode()
+    {
+        _isCapturingHotkey = false;
+        _isCapturingTargetBinding = false;
+    }
+
+    private void CancelCaptureMode()
+    {
+        CompleteCaptureMode();
+        RestoreCaptureButtonContent();
+    }
+
+    private void RestoreCaptureButtonContent()
+    {
+        if (!TryGetProfileContext(out InputProfile profile, out _))
+        {
+            CaptureHotkeyButton.Content = "Set Hotkey";
+            CaptureTargetKeyButton.Content = "Set Target";
+            return;
+        }
+
+        CaptureHotkeyButton.Content = profile.StartStopHotkey?.ToString() ?? "Set Hotkey";
+        CaptureTargetKeyButton.Content = profile.TargetInputBinding?.ToDisplayName() ?? "Set Target";
+    }
+
+    private void SettingsTabView_IsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.NewValue is bool isFocusedWithin && !isFocusedWithin && IsCapturingInput)
+        {
+            CancelCaptureMode();
+        }
+    }
+
     private void UpdateRunBehaviorUi()
     {
-        if (RunForSetCountRadioButton is null || RunCountTextBox is null || RunUntilStopRadioButton is null)
+        if (RunUntilStopRadioButton is null || HoldCheckBox is null || RunCountTextBox is null)
         {
             return;
         }
 
-        bool holdEnabled = HoldCheckBox.IsChecked == true;
-
-        if (holdEnabled)
-        {
-            RunUntilStopRadioButton.IsEnabled = true;
-            RunForSetCountRadioButton.IsEnabled = false;
-            RunUntilStopRadioButton.IsChecked = true;
-            RunForSetCountRadioButton.IsChecked = false;
-            RunCountTextBox.IsEnabled = false;
-            return;
-        }
-
-        RunUntilStopRadioButton.IsEnabled = true;
-        RunForSetCountRadioButton.IsEnabled = true;
-
-        bool runForSetCount = RunForSetCountRadioButton.IsChecked == true;
-        RunCountTextBox.IsEnabled = runForSetCount;
+        bool runUntilStop = RunUntilStopRadioButton.IsChecked == true;
+        RunCountTextBox.IsEnabled = !runUntilStop && HoldCheckBox.IsChecked != true;
     }
 
     private void UpdateInputBehaviorUi()
     {
-        bool holdEnabled = HoldCheckBox.IsChecked == true;
-        IntervalTextBox.IsEnabled = !holdEnabled;
-    }
-
-    private void DisableScheduleUi()
-    {
-        if (ScheduleStartEnabledCheckBox is null)
+        if (HoldCheckBox is null || IntervalTextBox is null || RunUntilStopRadioButton is null || RunForSetCountRadioButton is null)
         {
             return;
         }
 
-        ScheduleStartEnabledCheckBox.IsChecked = false;
-        ScheduleStopEnabledCheckBox.IsChecked = false;
-
-        ScheduleStartDatePicker.IsEnabled = false;
-        ScheduleStartHourTextBox.IsEnabled = false;
-        ScheduleStartMinuteTextBox.IsEnabled = false;
-        ScheduleStartSecondTextBox.IsEnabled = false;
-
-        ScheduleStopDatePicker.IsEnabled = false;
-        ScheduleStopHourTextBox.IsEnabled = false;
-        ScheduleStopMinuteTextBox.IsEnabled = false;
-        ScheduleStopSecondTextBox.IsEnabled = false;
+        bool holdEnabled = HoldCheckBox.IsChecked == true;
+        IntervalTextBox.IsEnabled = !holdEnabled;
+        RunUntilStopRadioButton.IsEnabled = true;
+        RunForSetCountRadioButton.IsEnabled = !holdEnabled;
     }
 
-    private static bool TryParsePositiveInteger(string? text, out int value)
+    private void DisableScheduleUi()
     {
-        if (!int.TryParse(text, NumberStyles.None, CultureInfo.CurrentCulture, out value))
+        if (ScheduleStartEnabledCheckBox is not null)
         {
-            return false;
+            ScheduleStartEnabledCheckBox.IsEnabled = false;
+            ScheduleStartEnabledCheckBox.IsChecked = false;
         }
 
-        return value > 0;
+        if (ScheduleStopEnabledCheckBox is not null)
+        {
+            ScheduleStopEnabledCheckBox.IsEnabled = false;
+            ScheduleStopEnabledCheckBox.IsChecked = false;
+        }
+
+        if (ScheduleStartDatePicker is not null)
+        {
+            ScheduleStartDatePicker.IsEnabled = false;
+        }
+
+        if (ScheduleStartHourTextBox is not null)
+        {
+            ScheduleStartHourTextBox.IsEnabled = false;
+        }
+
+        if (ScheduleStartMinuteTextBox is not null)
+        {
+            ScheduleStartMinuteTextBox.IsEnabled = false;
+        }
+
+        if (ScheduleStartSecondTextBox is not null)
+        {
+            ScheduleStartSecondTextBox.IsEnabled = false;
+        }
+
+        if (ScheduleStopDatePicker is not null)
+        {
+            ScheduleStopDatePicker.IsEnabled = false;
+        }
+
+        if (ScheduleStopHourTextBox is not null)
+        {
+            ScheduleStopHourTextBox.IsEnabled = false;
+        }
+
+        if (ScheduleStopMinuteTextBox is not null)
+        {
+            ScheduleStopMinuteTextBox.IsEnabled = false;
+        }
+
+        if (ScheduleStopSecondTextBox is not null)
+        {
+            ScheduleStopSecondTextBox.IsEnabled = false;
+        }
+    }
+
+    private void ScheduleStartEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
+    {
+        if (ScheduleStartEnabledCheckBox is not null)
+        {
+            ScheduleStartEnabledCheckBox.IsChecked = false;
+        }
+    }
+
+    private void ScheduleStartEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private void ScheduleStopEnabledCheckBox_Checked(object sender, RoutedEventArgs e)
+    {
+        if (ScheduleStopEnabledCheckBox is not null)
+        {
+            ScheduleStopEnabledCheckBox.IsChecked = false;
+        }
+    }
+
+    private void ScheduleStopEnabledCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    {
     }
 
     private bool TryGetProfileContext(out InputProfile profile, out IInputProfileStore profileStore)
@@ -537,11 +585,25 @@ public partial class SettingsTabView : UserControl
 
     private async Task SaveProfileAndNotifyAsync(InputProfile profile, IInputProfileStore profileStore)
     {
-        await profileStore.SaveProfileAsync(profile);
+        await _saveSemaphore.WaitAsync();
+
+        try
+        {
+            await profileStore.SaveProfileAsync(profile);
+        }
+        finally
+        {
+            _saveSemaphore.Release();
+        }
+
         ActiveProfileUpdated?.Invoke(this, EventArgs.Empty);
     }
 
-    #endregion
+    private static bool TryParsePositiveInteger(string? text, out int value)
+    {
+        bool parsed = int.TryParse(text, NumberStyles.None, CultureInfo.CurrentCulture, out value);
+        return parsed && value > 0;
+    }
 
     #region Mapping
 
@@ -552,4 +614,49 @@ public partial class SettingsTabView : UserControl
         => InputCaptureMapper.TryMapToInputKey(key, out inputKey);
 
     #endregion
+
+    private static bool IsClickOnCaptureButton(object originalSource, Button captureHotkeyButton, Button captureTargetKeyButton)
+    {
+        if (originalSource is not DependencyObject dependencyObject)
+        {
+            return false;
+        }
+
+        Button? clickedButton = FindVisualParent<Button>(dependencyObject);
+        return clickedButton == captureHotkeyButton || clickedButton == captureTargetKeyButton;
+    }
+
+    private bool IsClickOnCaptureButton(object originalSource)
+        => IsClickOnCaptureButton(originalSource, CaptureHotkeyButton, CaptureTargetKeyButton);
+
+    private static T? FindVisualParent<T>(DependencyObject child)
+        where T : DependencyObject
+    {
+        DependencyObject? current = child;
+
+        while (current is not null)
+        {
+            if (current is T match)
+            {
+                return match;
+            }
+
+            current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _saveSemaphore.Dispose();
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
 }
