@@ -109,6 +109,7 @@ public partial class MainWindow : Window
         _appConfiguration = await _appConfigurationStore.LoadConfigurationAsync();
 
         SettingsTabViewContent.SetContext(_profileManager, _inputProfileStore);
+        SequenceTabViewContent.SetContext(_profileManager, _inputProfileStore);
 
         UpdateThemeMenuChecks(ThemeManager.CurrentTheme);
         RefreshEngineUi();
@@ -116,6 +117,7 @@ public partial class MainWindow : Window
         await EnsureAtLeastOneProfileExistsAsync();
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
     }
 
     private void MainWindow_SourceInitialized(object? sender, EventArgs e)
@@ -215,6 +217,7 @@ public partial class MainWindow : Window
         await SaveLastActiveProfileAsync(importedProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
         RegisterActiveProfileHotkey();
         RefreshEngineUi();
     }
@@ -282,6 +285,7 @@ public partial class MainWindow : Window
         _profileManager.SetActiveProfile(selectedProfile);
         await SaveLastActiveProfileAsync(selectedProfile);
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
         RegisterActiveProfileHotkey();
         RefreshEngineUi();
     }
@@ -299,6 +303,7 @@ public partial class MainWindow : Window
         await SaveLastActiveProfileAsync(newProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
         RegisterActiveProfileHotkey();
         RefreshEngineUi();
     }
@@ -327,6 +332,7 @@ public partial class MainWindow : Window
         await _inputProfileStore.SaveProfileAsync(activeProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
     }
 
     private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
@@ -337,6 +343,7 @@ public partial class MainWindow : Window
             await EnsureAtLeastOneProfileExistsAsync();
             await LoadProfilesAsync();
             LoadSettingsTabFromActiveProfile();
+            LoadSequenceTabFromActiveProfile();
             RegisterActiveProfileHotkey();
             RefreshEngineUi();
             return;
@@ -366,6 +373,7 @@ public partial class MainWindow : Window
         await SaveLastActiveProfileAsync(nextProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
         RegisterActiveProfileHotkey();
         RefreshEngineUi();
     }
@@ -387,6 +395,7 @@ public partial class MainWindow : Window
         await SaveLastActiveProfileAsync(_profileManager.ActiveProfile);
         await LoadProfilesAsync();
         LoadSettingsTabFromActiveProfile();
+        LoadSequenceTabFromActiveProfile();
         RegisterActiveProfileHotkey();
         RefreshEngineUi();
     }
@@ -526,6 +535,11 @@ public partial class MainWindow : Window
     private void LoadSettingsTabFromActiveProfile()
     {
         SettingsTabViewContent.LoadProfile(_profileManager.ActiveProfile);
+    }
+
+    private void LoadSequenceTabFromActiveProfile()
+    {
+        SequenceTabViewContent.LoadProfile(_profileManager.ActiveProfile);
     }
 
     private void RegisterActiveProfileHotkey()

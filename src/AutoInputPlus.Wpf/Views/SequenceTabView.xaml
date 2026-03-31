@@ -39,24 +39,27 @@
                     <TextBlock Text="Saved Sequences"
                                FontWeight="SemiBold"/>
 
-                    <ListBox Grid.Row="2"/>
+                    <ListBox x:Name="SequenceListBox"
+                             Grid.Row="2"
+                             DisplayMemberPath="Name"
+                             SelectionChanged="SequenceListBox_SelectionChanged"/>
 
                     <StackPanel Grid.Row="4">
                         <Button Content="New"
                                 Height="32"
                                 Margin="0,0,0,6"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="NewSequenceButton_Click"/>
 
                         <Button Content="Rename"
                                 Height="32"
                                 Margin="0,0,0,6"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="RenameSequenceButton_Click"/>
 
                         <Button Content="Delete"
                                 Height="32"
-                                HorizontalContentAlignment="Center" 
+                                HorizontalContentAlignment="Center"
                                 Click="DeleteSequenceButton_Click"/>
                     </StackPanel>
                 </Grid>
@@ -78,25 +81,71 @@
                     <TextBlock Text="Steps"
                                FontWeight="SemiBold"/>
 
-                    <DataGrid Grid.Row="2"
+                    <DataGrid x:Name="StepsDataGrid"
+                              Grid.Row="2"
                               AutoGenerateColumns="False"
-                              HeadersVisibility="Column">
+                              HeadersVisibility="Column"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              RowHeaderWidth="0"
+                              LoadingRow="StepsDataGrid_LoadingRow">
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="#"
-                                                Width="50"/>
+                                                Width="50"
+                                                IsReadOnly="True"
+                                                Binding="{Binding StepNumber}"/>
 
-                            <DataGridTextColumn Header="Target"
-                                                Width="*"/>
+                            <DataGridTemplateColumn Header="Target"
+                                                    Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding TargetDisplay}"
+                                                HorizontalContentAlignment="Center"
+                                                Click="StepTargetButton_Click"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                            <DataGridCheckBoxColumn Header="Hold"
-                                                    Width="70"/>
+                            <DataGridTemplateColumn Header="Hold"
+                                                    Width="70">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding Step.IsHold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Checked="StepHoldCheckBox_Changed"
+                                                  Unchecked="StepHoldCheckBox_Changed"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Hold Duration"
-                                                Width="120"/>
+                            <DataGridTemplateColumn Header="Hold Duration"
+                                                    Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Step.DurationMilliseconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 PreviewTextInput="NonNegativeIntegerTextBox_PreviewTextInput"
+                                                 TextChanged="StepDurationTextBox_TextChanged"
+                                                 PreviewMouseLeftButtonDown="EditableCellControl_PreviewMouseLeftButtonDown"
+                                                 IsEnabled="{Binding Step.IsHold}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Delay After"
-                                                Width="120"/>
+                            <DataGridTemplateColumn Header="Delay After"
+                                                    Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Step.DelayAfterMilliseconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 PreviewTextInput="NonNegativeIntegerTextBox_PreviewTextInput"
+                                                 TextChanged="StepDelayAfterTextBox_TextChanged"
+                                                 PreviewMouseLeftButtonDown="EditableCellControl_PreviewMouseLeftButtonDown"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
 
@@ -114,7 +163,6 @@
                     </StackPanel>
                 </Grid>
             </Border>
-
         </Grid>
     </Grid>
 </UserControl>

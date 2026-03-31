@@ -242,7 +242,9 @@
                                 Content="New"
                                 Width="72"
                                 HorizontalContentAlignment="Center"
-                                Click="NewProfileButton_Click" Grid.ColumnSpan="2" Margin="0,0,8,0"/>
+                                Click="NewProfileButton_Click"
+                                Grid.ColumnSpan="2"
+                                Margin="0,0,8,0"/>
 
                         <Button x:Name="RenameProfileButton"
                                 Grid.Column="6"
@@ -274,7 +276,7 @@
 
                 <TabItem x:Name="SequenceTab"
                          Header="Sequence">
-                    <views:SequenceTabView/>
+                    <views:SequenceTabView x:Name="SequenceTabViewContent"/>
                 </TabItem>
 
                 <TabItem x:Name="AboutTab"

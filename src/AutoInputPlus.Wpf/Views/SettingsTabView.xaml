@@ -220,7 +220,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="Schedule"
+                               Text="Schedule (Coming soon!)"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
