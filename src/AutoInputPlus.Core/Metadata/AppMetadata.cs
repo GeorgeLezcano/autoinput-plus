@@ -20,7 +20,7 @@ public static class AppMetadata
 
     /// <summary>
     /// Gets an application metadata value by property name.
-    /// Reads from Directory.Build.props.
+    /// Prefers assembly metadata and falls back to Directory.Build.props.
     /// </summary>
     /// <param name="propertyName">The property name to retrieve, such as Authors, Company, Product, or RepositoryUrl.</param>
     /// <returns>The property value, or the configured fallback value if unavailable.</returns>
@@ -56,6 +56,7 @@ public static class AppMetadata
     /// <summary>
     /// Gets an application metadata value by property name using the provided base directory.
     /// Intended for testing.
+    /// Prefers assembly metadata and falls back to Directory.Build.props.
     /// </summary>
     /// <param name="propertyName">The property name to retrieve.</param>
     /// <param name="baseDirectory">The starting directory used when searching for Directory.Build.props.</param>
@@ -65,7 +66,13 @@ public static class AppMetadata
         if (string.IsNullOrWhiteSpace(propertyName))
             return AppConstants.MetadataFallback;
 
-        return ReadPropertyValue(propertyName, baseDirectory) ?? AppConstants.MetadataFallback;
+        string? value =
+            GetAssemblyMetadataValue(propertyName)
+            ?? ReadPropertyValue(propertyName, baseDirectory);
+
+        return string.IsNullOrWhiteSpace(value)
+            ? AppConstants.MetadataFallback
+            : value.Trim();
     }
 
     private static string? GetAssemblyVersion()
@@ -88,6 +95,33 @@ public static class AppMetadata
     private static string? GetAssemblyInformationalVersion()
     {
         return GetAssemblyAttribute<AssemblyInformationalVersionAttribute>(a => a.InformationalVersion);
+    }
+
+    private static string? GetAssemblyMetadataValue(string propertyName)
+    {
+        try
+        {
+            var assembly = typeof(AppMetadata).Assembly;
+
+            return propertyName switch
+            {
+                "Company" => assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
+                "Product" => assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
+                "Authors" => assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                    .FirstOrDefault(a => a.Key == "Authors")?.Value,
+                "RepositoryUrl" => assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                    .FirstOrDefault(a => a.Key == "RepositoryUrl")?.Value,
+                "Version" => GetAssemblyInformationalVersion()
+                    ?? GetAssemblyFileVersion()
+                    ?? GetAssemblyVersion(),
+                _ => assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                    .FirstOrDefault(a => a.Key == propertyName)?.Value,
+            };
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static string? GetAssemblyAttribute<T>(Func<T, string?> selector)

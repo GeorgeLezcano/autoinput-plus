@@ -16,4 +16,15 @@
         <RepositoryUrl>https://github.com/GeorgeLezcano/autoinput-plus.git</RepositoryUrl>
         <AnalysisLevel>latest-recommended</AnalysisLevel>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>Authors</_Parameter1>
+            <_Parameter2>George Lezcano</_Parameter2>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>RepositoryUrl</_Parameter1>
+            <_Parameter2>https://github.com/GeorgeLezcano/autoinput-plus.git</_Parameter2>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>
