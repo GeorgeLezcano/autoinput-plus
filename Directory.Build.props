@@ -6,7 +6,7 @@
         <LangVersion>latest</LangVersion>
         <NuGetAudit>false</NuGetAudit>
 
-        <Version>1.0.0-prerelease</Version>
+        <Version>1.0.0-prerelease.1</Version>
 
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
