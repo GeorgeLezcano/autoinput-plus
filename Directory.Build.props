@@ -4,9 +4,9 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
-	<NuGetAudit>false</NuGetAudit>
+        <NuGetAudit>false</NuGetAudit>
 
-        <Version>0.1.0</Version>
+        <Version>1.0.0-prerelease</Version>
 
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>

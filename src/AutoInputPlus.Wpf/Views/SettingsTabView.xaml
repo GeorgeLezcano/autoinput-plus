@@ -219,10 +219,25 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="Schedule (Coming soon!)"
-                               FontSize="18"
-                               FontWeight="SemiBold"/>
+                    <StackPanel Grid.Row="0"
+                            Orientation="Horizontal">
+                        <TextBlock Text="Schedule"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            VerticalAlignment="Center"/>
+
+                        <Border Margin="10,0,0,0"
+                                Padding="8,2"
+                                CornerRadius="10"
+                                Background="{DynamicResource SurfaceBrush}"
+                                BorderBrush="{DynamicResource BorderBrushSoft}"
+                                BorderThickness="1"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="Preview"
+                                    FontSize="12"
+                                    Opacity="0.85"/>
+                    </Border>
+                </StackPanel>
 
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>

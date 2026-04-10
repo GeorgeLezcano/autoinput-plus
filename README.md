@@ -1,24 +1,75 @@
-# Autoinput Plus (Make this read me better eventually...)
+# AutoInput Plus
 
-## Projects
-- ### Core: Contains models, interfaces, constants and shared utilities.
-- ### Engine: Contains the simulation and runtime logic of the application. Source of truth for states.
-- ### Infrastructure: Constains the framework for the application, such as persistence, networking or authentication (if any)
-- ### Input.Windows: Constains code to handle key inputs in windows.
-- ### Wpf: This is the UI project using C# WPF
+AutoInput Plus is a Windows desktop application for configuring and running automated keyboard and mouse input profiles.
 
-# TODO
-- Make InputProfileStore.GetAllAsync() resilient to a bad/corrupt profile file so one broken JSON file does not kill profile loading..
-- Implement startup bootstrap flow and Windows-startup registry service.
-- Implement schedule behavior in AutoInputEngine.
+---
 
-### Import/Export stuff
-- Complete import (actually use the profile after validation)
-- Save imported profile
-- Set imported profile as active
-- Refresh UI/profile list after import
-- Handle duplicate profile names
+## Overview
 
-# Known Bugs/Issues
-- IEngine doesnt expose a status change for the UI to subscribe, explore options so it updates sa global hotkeys are pressed. Right now its only dependent on Checkbox or Form startup, nothing else triggers the updates.
-- Fix ShouldStopAfterExecution() so RunUntilStopActive wins over count, and clamp count with Math.Max(1, ...), not Math.Max(0, ...).
+The solution is structured to separate concerns between runtime execution, input handling, persistence, and UI.
+
+### AutoInputPlus.Core
+
+Shared contracts and domain models.
+
+- Application models
+- Profile models
+- Enums and constants
+- Interfaces used across the solution
+
+---
+
+### AutoInputPlus.Engine
+
+Handles runtime execution of automation.
+
+- Input execution logic
+- Engine lifecycle and state management
+- Repeat / hold / count-based behavior
+- Profile execution flow
+
+The engine is the **runtime source of truth** for execution state.
+
+---
+
+### AutoInputPlus.Infrastructure
+
+Persistence and system-level services.
+
+- App configuration storage
+- Profile storage
+- Import / export functionality
+- Windows startup registration
+
+---
+
+### AutoInputPlus.Input.Windows
+
+Windows-specific input handling.
+
+- Global hotkey registration
+- Keyboard and mouse capture
+- Input simulation
+
+---
+
+### AutoInputPlus.Wpf
+
+The desktop UI.
+
+- WPF views and layout
+- User interaction flow
+- Engine integration
+- Profile management UI
+- Tray/menu integration
+
+---
+
+## Build / Run
+
+Open the solution in Visual Studio or use the scripts in `/scripts`.
+
+- Main entry project: `src/AutoInputPlus.Wpf`
+- Use `scripts/run.sh` to build and run the app.
+
+---
