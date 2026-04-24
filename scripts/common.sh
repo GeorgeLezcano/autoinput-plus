@@ -34,6 +34,8 @@ SOLUTION_FILE="${REPO_ROOT}/AutoInputPlus.sln"
 # Main WPF project
 WPF_PROJECT="${REPO_ROOT}/src/AutoInputPlus.Wpf/AutoInputPlus.Wpf.csproj"
 
+APP_RELEASE_NAME="${APP_RELEASE_NAME:-AutoInputPlus}"
+
 # Artifacts directory (build outputs)
 ARTIFACTS_DIR="${REPO_ROOT}/artifacts"
 PUBLISH_DIR="${ARTIFACTS_DIR}/publish"
