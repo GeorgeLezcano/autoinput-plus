@@ -111,8 +111,8 @@ fi
 "${SCRIPT_DIR}/publish.sh" "${PUBLISH_ARGS[@]}"
 
 VERSION="$(date +%Y%m%d-%H%M%S)"
-SOURCE_DIR="${PUBLISH_DIR}/AutoInputPlus.Wpf"
-ZIP_FILE="${RELEASE_DIR}/AutoInputPlus-${VERSION}.zip"
+SOURCE_DIR="${PUBLISH_DIR}/${APP_RELEASE_NAME}"
+ZIP_FILE="${RELEASE_DIR}/${APP_RELEASE_NAME}-${VERSION}.zip"
 
 log "Creating release archive..."
 
