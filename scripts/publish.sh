@@ -116,7 +116,7 @@ if [[ "${RUN_BUILD}" == true ]]; then
     "${SCRIPT_DIR}/build.sh" "${BUILD_ARGS[@]}"
 fi
 
-OUTPUT_DIR="${PUBLISH_DIR}/AutoInputPlus.Wpf"
+OUTPUT_DIR="${PUBLISH_DIR}/${APP_RELEASE_NAME}"
 
 log "Publishing WPF application..."
 
