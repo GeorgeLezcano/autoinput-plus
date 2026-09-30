@@ -47,7 +47,7 @@ TEST_RESULTS_DIR="${ARTIFACTS_DIR}/test-results"
 CONFIGURATION="${CONFIGURATION:-Release}"
 
 # Target framework
-FRAMEWORK_WPF="${FRAMEWORK_WPF:-net9.0-windows}"
+FRAMEWORK_WPF="${FRAMEWORK_WPF:-net10.0-windows}"
 
 # Runtime identifier
 RUNTIME_WINDOWS="${RUNTIME_WINDOWS:-win-x64}"
@@ -109,7 +109,7 @@ Common options:
 
 Environment overrides:
   CONFIGURATION=Debug
-  FRAMEWORK_WPF=net9.0-windows
+  FRAMEWORK_WPF=net10.0-windows
   RUNTIME_WINDOWS=win-x64
 EOF
 }
