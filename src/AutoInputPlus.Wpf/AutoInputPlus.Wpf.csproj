@@ -27,6 +27,9 @@
     <Resource Include="..\..\assets\logo.ico">
       <Link>Assets\logo.ico</Link>
     </Resource>
+	<Resource Include="..\..\assets\UserGuide.md">
+		<Link>Assets\UserGuide.md</Link>
+	</Resource>
   </ItemGroup>
-
+	
 </Project>

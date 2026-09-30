@@ -130,6 +130,32 @@
                     </MenuItem.Style>
                 </MenuItem>
             </MenuItem>
+
+            <MenuItem  Header="_Help">
+                <MenuItem x:Name="UserGuide"
+                   Header="_User Guide"
+                   IsCheckable="False"
+                   Click="UserGuide_Click">
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Background"
+                     Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
+                            <Setter Property="Foreground"
+                     Value="{DynamicResource MenuSubItemForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsHighlighted"
+                          Value="True">
+                                    <Setter Property="Background"
+                             Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
+                                    <Setter Property="Foreground"
+                             Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
+            </MenuItem>
+
         </Menu>
 
         <Border DockPanel.Dock="Top"

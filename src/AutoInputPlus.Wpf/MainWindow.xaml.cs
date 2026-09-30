@@ -380,6 +380,16 @@ public partial class MainWindow : Window
         RefreshEngineUi();
     }
 
+    private async void UserGuide_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new UserGuideWindow()
+        {
+           Owner = this
+        };
+
+        dialog.ShowDialog();
+    }
+
     #endregion
 
     #region Helpers
