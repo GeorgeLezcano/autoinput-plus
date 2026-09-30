@@ -58,29 +58,6 @@
                         </Style>
                     </MenuItem.Style>
                 </MenuItem>
-
-                <Separator/>
-
-                <MenuItem Header="_Open Data Folder"
-                          Click="OpenDataFolderMenuItem_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="_Themes">

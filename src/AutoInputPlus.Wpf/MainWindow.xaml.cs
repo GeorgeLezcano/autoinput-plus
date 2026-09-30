@@ -164,24 +164,6 @@ public partial class MainWindow : Window
         ThemeManager.ApplyTheme(AppTheme.DarkBlue);
     }
 
-    private void OpenDataFolderMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        string appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        appDataDirectory = Path.Combine(appDataDirectory, "AutoInputPlus");
-
-        if (!Directory.Exists(appDataDirectory))
-        {
-            Directory.CreateDirectory(appDataDirectory);
-        }
-
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = appDataDirectory,
-            UseShellExecute = true,
-            Verb = "open"
-        });
-    }
-
     private async void ExportProfile_Click(object sender, RoutedEventArgs e)
     {
         InputProfile activeProfile = _profileManager.ActiveProfile;
