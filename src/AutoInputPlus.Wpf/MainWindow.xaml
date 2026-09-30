@@ -18,121 +18,29 @@
 
             <MenuItem Header="_Tools">
                 <MenuItem Header="_Export Active Profile"
-                          Click="ExportProfile_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                          Click="ExportProfile_Click"/>
 
                 <MenuItem Header="_Import Profile"
-                          Click="ImportProfile_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                          Click="ImportProfile_Click"/>
             </MenuItem>
 
             <MenuItem Header="_Themes">
                 <MenuItem x:Name="LightBlueThemeMenuItem"
                           Header="_Light Blue"
                           IsCheckable="True"
-                          Click="LightBlueThemeMenuItem_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                          Click="LightBlueThemeMenuItem_Click"/>
 
                 <MenuItem x:Name="DarkBlueThemeMenuItem"
-                          Header="_Dark Blue (Preview)"
+                          Header="_Dark Blue"
                           IsCheckable="True"
-                          Click="DarkBlueThemeMenuItem_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                                         Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                          Click="DarkBlueThemeMenuItem_Click"/>
             </MenuItem>
 
-            <MenuItem  Header="_Help">
+            <MenuItem Header="_Help">
                 <MenuItem x:Name="UserGuide"
-                   Header="_User Guide"
-                   IsCheckable="False"
-                   Click="UserGuide_Click">
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem">
-                            <Setter Property="Background"
-                     Value="{DynamicResource MenuSubItemBackgroundBrush}"/>
-                            <Setter Property="Foreground"
-                     Value="{DynamicResource MenuSubItemForegroundBrush}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsHighlighted"
-                          Value="True">
-                                    <Setter Property="Background"
-                             Value="{DynamicResource MenuSubItemHoverBackgroundBrush}"/>
-                                    <Setter Property="Foreground"
-                             Value="{DynamicResource MenuSubItemHoverForegroundBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                          Header="_User Guide"
+                          Click="UserGuide_Click"/>
             </MenuItem>
-
         </Menu>
 
         <Border DockPanel.Dock="Top"
@@ -190,15 +98,15 @@
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center">
                             <TextBlock Text="Status:"
-                                       VerticalAlignment="Center"
                                        Margin="0,0,8,0"
+                                       VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextBrushSecondary}"/>
 
                             <Border x:Name="EngineStatusBadge"
-                                    CornerRadius="12"
-                                    Background="{DynamicResource StatusNeutralBrush}"
                                     Padding="10,4"
-                                    VerticalAlignment="Center">
+                                    VerticalAlignment="Center"
+                                    Background="{DynamicResource StatusNeutralBrush}"
+                                    CornerRadius="12">
                                 <TextBlock x:Name="EngineStatusTextBlock"
                                            Text="Unavailable"
                                            FontSize="14"
@@ -242,27 +150,27 @@
 
                         <Button x:Name="NewProfileButton"
                                 Grid.Column="4"
-                                Content="New"
-                                Width="72"
-                                HorizontalContentAlignment="Center"
-                                Click="NewProfileButton_Click"
                                 Grid.ColumnSpan="2"
-                                Margin="0,0,8,0"/>
+                                Width="72"
+                                Margin="0,0,8,0"
+                                HorizontalContentAlignment="Center"
+                                Content="New"
+                                Click="NewProfileButton_Click"/>
 
                         <Button x:Name="RenameProfileButton"
                                 Grid.Column="6"
-                                Content="Rename"
                                 Width="82"
                                 Height="32"
                                 HorizontalContentAlignment="Center"
+                                Content="Rename"
                                 Click="RenameProfileButton_Click"/>
 
                         <Button x:Name="DeleteProfileButton"
                                 Grid.Column="8"
-                                Content="Delete"
                                 Width="78"
                                 Height="32"
                                 HorizontalContentAlignment="Center"
+                                Content="Delete"
                                 Click="DeleteProfileButton_Click"/>
                     </Grid>
                 </Border>
@@ -271,7 +179,6 @@
 
         <Grid Margin="12">
             <TabControl x:Name="RootTabControl">
-
                 <TabItem x:Name="SettingsTab"
                          Header="Settings">
                     <views:SettingsTabView x:Name="SettingsTabViewContent"/>
@@ -286,7 +193,6 @@
                          Header="About">
                     <views:AboutTabView/>
                 </TabItem>
-
             </TabControl>
         </Grid>
     </DockPanel>

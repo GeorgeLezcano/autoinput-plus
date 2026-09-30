@@ -428,33 +428,33 @@ public partial class MainWindow : Window
             switch (_engine.State)
             {
                 case EngineState.Disabled:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(229, 231, 235));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(55, 65, 81));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(203, 213, 225));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(30, 41, 59));
                     break;
 
                 case EngineState.Ready:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(220, 252, 231));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(22, 101, 52));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(134, 239, 172));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(20, 83, 45));
                     break;
 
                 case EngineState.Running:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(219, 234, 254));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(30, 64, 175));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(147, 197, 253));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(30, 58, 138));
                     break;
 
                 case EngineState.Scheduled:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(255, 237, 213));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(154, 52, 18));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(253, 186, 116));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(124, 45, 18));
                     break;
 
                 case EngineState.Error:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(254, 226, 226));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(153, 27, 27));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(252, 165, 165));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(127, 29, 29));
                     break;
 
                 default:
-                    badgeBackground = new SolidColorBrush(Color.FromRgb(229, 231, 235));
-                    badgeForeground = new SolidColorBrush(Color.FromRgb(55, 65, 81));
+                    badgeBackground = new SolidColorBrush(Color.FromRgb(203, 213, 225));
+                    badgeForeground = new SolidColorBrush(Color.FromRgb(30, 41, 59));
                     break;
             }
 
