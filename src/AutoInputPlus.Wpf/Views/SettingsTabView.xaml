@@ -55,11 +55,11 @@
                                              GroupName="ExecutionMode"
                                              Content="Single Input"
                                              IsChecked="True"
-                                             Margin="0,0,20,0" 
+                                             Margin="0,0,20,0"
                                              Checked="SingleInputModeRadioButton_Checked"/>
                                 <RadioButton x:Name="SequenceModeRadioButton"
                                              GroupName="ExecutionMode"
-                                             Content="Sequence Mode" 
+                                             Content="Sequence Mode"
                                              Checked="SequenceModeRadioButton_Checked"/>
                             </StackPanel>
                         </StackPanel>
@@ -93,7 +93,7 @@
                                             Height="34"
                                             Width="120"
                                             Content="Set Hotkey"
-                                            HorizontalContentAlignment="Center" 
+                                            HorizontalContentAlignment="Center"
                                             Click="CaptureHotkeyButton_Click"/>
                                 </StackPanel>
 
@@ -104,7 +104,7 @@
                                             Height="34"
                                             Width="120"
                                             Content="Set Target"
-                                            HorizontalContentAlignment="Center" 
+                                            HorizontalContentAlignment="Center"
                                             Click="CaptureTargetKeyButton_Click"/>
                                 </StackPanel>
                             </Grid>
@@ -145,12 +145,12 @@
                                                  Width="120"
                                                  Text="100"
                                                  TextAlignment="Center"
-                                                 VerticalContentAlignment="Center" 
+                                                 VerticalContentAlignment="Center"
                                                  TextChanged="IntervalTextBox_TextChanged"/>
                                     </StackPanel>
 
                                     <CheckBox Grid.Row="4"
-                                              x:Name="HoldCheckBox" 
+                                              x:Name="HoldCheckBox"
                                               Checked="HoldCheckBox_Checked"
                                               Unchecked="HoldCheckBox_Unchecked">
                                         <TextBlock Text="Hold target instead of repeating input"
@@ -181,13 +181,13 @@
                                                  x:Name="RunUntilStopRadioButton"
                                                  GroupName="RunMode"
                                                  Content="Run until manually stopped"
-                                                 IsChecked="True" 
+                                                 IsChecked="True"
                                                  Checked="RunUntilStopRadioButton_Checked"/>
 
                                     <RadioButton Grid.Row="4"
                                                  x:Name="RunForSetCountRadioButton"
                                                  GroupName="RunMode"
-                                                 Content="Run for set count" 
+                                                 Content="Run for set count"
                                                  Checked="RunForSetCountRadioButton_Checked"/>
 
                                     <StackPanel Grid.Row="6"
@@ -199,7 +199,7 @@
                                                  Width="120"
                                                  Text="100"
                                                  TextAlignment="Center"
-                                                 VerticalContentAlignment="Center" 
+                                                 VerticalContentAlignment="Center"
                                                  TextChanged="RunCountTextBox_TextChanged"/>
                                     </StackPanel>
                                 </Grid>
@@ -220,11 +220,11 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0"
-                            Orientation="Horizontal">
+                                Orientation="Horizontal">
                         <TextBlock Text="Schedule"
-                            FontSize="18"
-                            FontWeight="SemiBold"
-                            VerticalAlignment="Center"/>
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
 
                         <Border Margin="10,0,0,0"
                                 Padding="8,2"
@@ -234,10 +234,10 @@
                                 BorderThickness="1"
                                 VerticalAlignment="Center">
                             <TextBlock Text="Preview"
-                                    FontSize="12"
-                                    Opacity="0.85"/>
-                    </Border>
-                </StackPanel>
+                                       FontSize="12"
+                                       Opacity="0.85"/>
+                        </Border>
+                    </StackPanel>
 
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
@@ -249,7 +249,7 @@
                         <StackPanel Grid.Column="0">
                             <CheckBox x:Name="ScheduleStartEnabledCheckBox"
                                       Content="Use scheduled start"
-                                      Margin="0,0,0,8" 
+                                      Margin="0,0,0,8"
                                       Checked="ScheduleStartEnabledCheckBox_Checked"
                                       Unchecked="ScheduleStartEnabledCheckBox_Unchecked"/>
                             <TextBlock Text="Start Date / Time"
@@ -308,10 +308,10 @@
 
                         <StackPanel Grid.Column="2">
                             <CheckBox x:Name="ScheduleStopEnabledCheckBox"
-                                  Content="Use scheduled stop"
-                                  Margin="0,0,0,8" 
-                                  Checked="ScheduleStopEnabledCheckBox_Checked"
-                                  Unchecked="ScheduleStopEnabledCheckBox_Unchecked"/>       
+                                      Content="Use scheduled stop"
+                                      Margin="0,0,0,8"
+                                      Checked="ScheduleStopEnabledCheckBox_Checked"
+                                      Unchecked="ScheduleStopEnabledCheckBox_Unchecked"/>
                             <TextBlock Text="Stop Date / Time"
                                        Margin="0,0,0,6"/>
 
