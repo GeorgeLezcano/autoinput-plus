@@ -1,8 +1,8 @@
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Input.Windows.Mapping;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace AutoInputPlus.Input.Windows.Input;
 

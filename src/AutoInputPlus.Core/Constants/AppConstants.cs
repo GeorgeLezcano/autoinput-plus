@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoInputPlus.Core.Constants;
 

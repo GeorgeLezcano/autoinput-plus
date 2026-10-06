@@ -1,5 +1,5 @@
-using System.Windows;
 using AutoInputPlus.Core.Interfaces;
+using System.Windows;
 
 namespace AutoInputPlus.Wpf.Views.Dialogs;
 

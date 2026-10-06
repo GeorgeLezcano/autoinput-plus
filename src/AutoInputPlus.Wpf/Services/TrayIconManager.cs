@@ -1,7 +1,7 @@
-using System.IO;
-using System.Windows.Resources;
 using AutoInputPlus.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System.Windows.Resources;
 using WpfApplication = System.Windows.Application;
 
 namespace AutoInputPlus.Wpf.Services;

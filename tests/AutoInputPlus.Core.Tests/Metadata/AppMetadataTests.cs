@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Constants;
 using AutoInputPlus.Core.Metadata;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoInputPlus.Core.Tests.Metadata;
 

@@ -1,8 +1,8 @@
-using System.Runtime.Versioning;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Infrastructure.Persistence;
 using AutoInputPlus.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.Versioning;
 
 namespace AutoInputPlus.Infrastructure;
 

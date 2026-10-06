@@ -1,8 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Input.Windows.Hotkeys;
 using AutoInputPlus.Input.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoInputPlus.Input.Windows;
 

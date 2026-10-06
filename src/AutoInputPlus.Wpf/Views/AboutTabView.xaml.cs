@@ -1,5 +1,5 @@
-using System.Windows;
 using AutoInputPlus.Core.Metadata;
+using System.Windows;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace AutoInputPlus.Wpf.Views;

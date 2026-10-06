@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Input.Windows.Mapping;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoInputPlus.Input.Windows.Tests.Mapping;
 

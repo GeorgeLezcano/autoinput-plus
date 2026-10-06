@@ -1,8 +1,8 @@
-using System.Text;
-using System.Text.Json;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 using AutoInputPlus.Core.Serialization;
+using System.Text;
+using System.Text.Json;
 
 namespace AutoInputPlus.Engine.Profile;
 

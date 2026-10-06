@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Windows;
-using AutoInputPlus.Core.Enums;
+﻿using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 using AutoInputPlus.Engine;
@@ -9,6 +7,8 @@ using AutoInputPlus.Infrastructure;
 using AutoInputPlus.Input.Windows;
 using AutoInputPlus.Wpf.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 using Application = System.Windows.Application;
 
 namespace AutoInputPlus.Wpf;

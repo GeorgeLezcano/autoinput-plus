@@ -1,7 +1,7 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AutoInputPlus.Core.Serialization;
 

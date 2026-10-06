@@ -1,6 +1,6 @@
-using System.Text.Json;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
+using System.Text.Json;
 
 namespace AutoInputPlus.Infrastructure.Persistence;
 

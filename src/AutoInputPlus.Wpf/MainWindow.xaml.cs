@@ -1,17 +1,15 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Interop;
-using System.Windows.Media;
-using AutoInputPlus.Core.Constants;
+﻿using AutoInputPlus.Core.Constants;
 using AutoInputPlus.Core.Enums;
 using AutoInputPlus.Core.Interfaces;
 using AutoInputPlus.Core.Models;
 using AutoInputPlus.Engine.Profile;
 using AutoInputPlus.Wpf.Services;
 using AutoInputPlus.Wpf.Views.Dialogs;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Interop;
+using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 
@@ -366,7 +364,7 @@ public partial class MainWindow : Window
     {
         var dialog = new UserGuideWindow()
         {
-           Owner = this
+            Owner = this
         };
 
         dialog.ShowDialog();

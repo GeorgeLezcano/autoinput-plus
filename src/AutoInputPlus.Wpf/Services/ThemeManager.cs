@@ -1,5 +1,5 @@
-using System.Windows;
 using AutoInputPlus.Core.Enums;
+using System.Windows;
 using Application = System.Windows.Application;
 
 namespace AutoInputPlus.Wpf.Services;

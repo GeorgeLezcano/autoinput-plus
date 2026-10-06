@@ -1,6 +1,6 @@
-﻿using System.Runtime.Versioning;
-using AutoInputPlus.Core.Interfaces;
+﻿using AutoInputPlus.Core.Interfaces;
 using Microsoft.Win32;
+using System.Runtime.Versioning;
 
 namespace AutoInputPlus.Infrastructure.Services;
 
