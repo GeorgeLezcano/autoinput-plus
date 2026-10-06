@@ -54,6 +54,8 @@ public partial class SequenceTabView : UserControl, IDisposable
         StepsDataGrid.ItemsSource = _stepRows;
 
         DataObject.AddPastingHandler(StepsDataGrid, NonNegativeIntegerTextBox_Pasting);
+
+        SetUIState();
     }
 
     /// <summary>
@@ -104,6 +106,7 @@ public partial class SequenceTabView : UserControl, IDisposable
         finally
         {
             _isLoadingProfile = false;
+            SetUIState();
         }
     }
 
@@ -650,6 +653,21 @@ public partial class SequenceTabView : UserControl, IDisposable
         _saveSemaphore.Dispose();
         _disposed = true;
         GC.SuppressFinalize(this);
+    }
+
+    private void SetUIState()
+    {
+        bool hasSelectedSequence = SequenceListBox.SelectedItem is Sequence;
+        bool hasSelectedStep = StepsDataGrid.SelectedItem is SequenceStepRow;
+
+        AddSequenceStepButton.IsEnabled = hasSelectedSequence;
+        RemoveSequenceStepButton.IsEnabled = hasSelectedStep;
+        RemoveSequenceButton.IsEnabled = hasSelectedSequence;
+        RenameSequenceButton.IsEnabled = hasSelectedSequence;
+    }
+    private void StepsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SetUIState();
     }
 
     #endregion

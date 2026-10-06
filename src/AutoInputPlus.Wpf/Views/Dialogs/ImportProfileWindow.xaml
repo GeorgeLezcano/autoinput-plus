@@ -25,7 +25,8 @@
             <TextBlock Text="Import Profile"
                        FontSize="22"
                        FontWeight="SemiBold"/>
-            <TextBlock Text="Paste an encoded profile string below to import."
+
+            <TextBlock Text="Paste a profile string below to import."
                        Margin="0,6,0,0"
                        Foreground="{DynamicResource TextBrushSecondary}"/>
         </StackPanel>
@@ -33,28 +34,16 @@
         <Border Grid.Row="2"
                 Padding="12"
                 Style="{DynamicResource CardBorderStyle}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="8"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="Encoded Profile String"
-                           FontWeight="SemiBold"/>
-
-                <TextBox Grid.Row="2"
-                         x:Name="ImportTextBox"
-                         TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Disabled"
-                         AcceptsReturn="True"
-                         FontFamily="Consolas"
-                         FontSize="13"
-                         MinHeight="200"
-                         TextChanged="ImportTextBox_TextChanged"/>
-            </Grid>
+            <TextBox x:Name="ImportTextBox"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Disabled"
+                     AcceptsReturn="True"
+                     FontFamily="Consolas"
+                     FontSize="13"
+                     MinHeight="200"
+                     TextChanged="ImportTextBox_TextChanged"/>
         </Border>
 
         <TextBlock Grid.Row="4"

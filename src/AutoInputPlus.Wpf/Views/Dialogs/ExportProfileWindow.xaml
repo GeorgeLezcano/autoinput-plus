@@ -23,7 +23,8 @@
             <TextBlock Text="Export Profile"
                        FontSize="22"
                        FontWeight="SemiBold"/>
-            <TextBlock Text="Copy this encoded profile string to share."
+
+            <TextBlock Text="Copy profile string to share."
                        Margin="0,6,0,0"
                        Foreground="{DynamicResource TextBrushSecondary}"/>
         </StackPanel>
@@ -31,28 +32,16 @@
         <Border Grid.Row="2"
                 Padding="12"
                 Style="{DynamicResource CardBorderStyle}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="8"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="Encoded Profile String"
-                           FontWeight="SemiBold"/>
-
-                <TextBox Grid.Row="2"
-                         x:Name="ExportTextBox"
-                         IsReadOnly="True"
-                         TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Disabled"
-                         AcceptsReturn="True"
-                         FontFamily="Consolas"
-                         FontSize="13"
-                         MinHeight="180"/>
-            </Grid>
+            <TextBox x:Name="ExportTextBox"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Disabled"
+                     AcceptsReturn="True"
+                     FontFamily="Consolas"
+                     FontSize="13"
+                     MinHeight="180"/>
         </Border>
 
         <Grid Grid.Row="4">
@@ -75,6 +64,7 @@
                                Margin="0,0,6,0"
                                VerticalAlignment="Center"
                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
+
                     <TextBlock x:Name="CopyButtonLabelTextBlock"
                                Text="Copy"
                                VerticalAlignment="Center"/>

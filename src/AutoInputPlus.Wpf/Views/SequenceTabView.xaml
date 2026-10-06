@@ -51,13 +51,15 @@
                                 HorizontalContentAlignment="Center"
                                 Click="NewSequenceButton_Click"/>
 
-                        <Button Content="Rename"
+                        <Button x:Name="RenameSequenceButton"
+                                Content="Rename"
                                 Height="32"
                                 Margin="0,0,0,6"
                                 HorizontalContentAlignment="Center"
                                 Click="RenameSequenceButton_Click"/>
 
-                        <Button Content="Delete"
+                        <Button x:Name="RemoveSequenceButton"
+                                Content="Delete"
                                 Height="32"
                                 HorizontalContentAlignment="Center"
                                 Click="DeleteSequenceButton_Click"/>
@@ -90,7 +92,8 @@
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
                               RowHeaderWidth="0"
-                              LoadingRow="StepsDataGrid_LoadingRow">
+                              LoadingRow="StepsDataGrid_LoadingRow"
+                              SelectionChanged="StepsDataGrid_SelectionChanged">
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="#"
@@ -151,12 +154,14 @@
 
                     <StackPanel Grid.Row="4"
                                 Orientation="Horizontal">
-                        <Button Content="Add"
+                        <Button x:Name="AddSequenceStepButton"
+                                Content="Add"
                                 Width="80"
                                 Height="32"
                                 Margin="0,0,8,0"
                                 Click="AddStepButton_Click"/>
-                        <Button Content="Remove"
+                        <Button x:Name="RemoveSequenceStepButton"
+                                Content="Remove"
                                 Width="80"
                                 Height="32"
                                 Click="RemoveStepButton_Click"/>
